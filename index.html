@@ -56,6 +56,7 @@
             margin-bottom: 30px;
             padding-bottom: 20px;
             border-bottom: 2px solid var(--oro);
+            position: relative;
         }
 
         header h1 {
@@ -67,8 +68,21 @@
         }
 
         header p {
-            color: var(--texto-mutated || var(--texto-mutado));
+            color: var(--texto-mutado);
             font-size: 1rem;
+        }
+
+        .btn-auth-header {
+            position: absolute;
+            right: 0;
+            top: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .btn-auth-header {
+                position: static;
+                margin-top: 10px;
+            }
         }
 
         /* Componentes de Tarjetas Modernas */
@@ -159,7 +173,6 @@
             box-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
         }
 
-        /* Casillas de Verificación Estilizadas */
         .opcion-check {
             display: flex;
             align-items: center;
@@ -183,7 +196,6 @@
             height: 18px;
         }
 
-        /* Botones */
         .btn {
             padding: 10px 20px;
             border-radius: var(--borde-radio);
@@ -200,12 +212,20 @@
             gap: 8px;
         }
 
+        .btn:disabled {
+            background-color: #2a2e3d !important;
+            color: var(--texto-mutado) !important;
+            border-color: #1f222e !important;
+            cursor: not-allowed;
+            box-shadow: none !important;
+        }
+
         .btn-oro {
             background-color: var(--oro);
             color: #000;
         }
 
-        .btn-oro:hover {
+        .btn-oro:hover:not(:disabled) {
             background-color: var(--oro-brillo);
             box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
         }
@@ -218,7 +238,7 @@
             border: 1px solid #3a3f52;
         }
 
-        .btn-accion:hover {
+        .btn-accion:hover:not(:disabled) {
             border-color: var(--oro);
             color: var(--oro);
         }
@@ -229,7 +249,7 @@
             border: 1px solid #661d1d;
         }
 
-        .btn-peligro:hover {
+        .btn-peligro:hover:not(:disabled) {
             background-color: var(--estado-penalizado);
         }
 
@@ -239,8 +259,18 @@
             border: 1px solid #2563eb;
         }
 
-        .btn-azul:hover {
+        .btn-azul:hover:not(:disabled) {
             background-color: #2563eb;
+            color: #fff;
+        }
+
+        .btn-verde {
+            background-color: #14532d;
+            color: #4ade80;
+            border: 1px solid #16a34a;
+        }
+        .btn-verde:hover:not(:disabled) {
+            background-color: #16a34a;
             color: #fff;
         }
 
@@ -280,7 +310,7 @@
         }
 
         /* ==========================================================================
-           4. TABLAS RESPONSIVAS Y SUGERENCIAS DE BÚSQUEDA
+           4. TABLAS RESPONSIVAS Y EFECTOS DE BRILLO (Oro y Celeste)
            ========================================================================== */
         .tabla-contenedor {
             width: 100%;
@@ -323,6 +353,46 @@
         td.celda-campeon { color: var(--texto-campeon); font-weight: bold; background-color: rgba(27,77,62,0.15); }
         td.celda-penalizado { color: var(--texto-penalizado); background-color: rgba(102,29,29,0.15); }
         td.celda-ambos { color: var(--texto-ambos); font-weight: bold; background-color: rgba(89,74,19,0.15); }
+
+        /* Efecto Brillo Dorado Puntero */
+        .gold-glow {
+            color: #fff !important;
+            font-weight: bold;
+            text-transform: uppercase;
+            animation: brilloDorado 2s infinite alternate;
+            text-shadow: 0 0 4px rgba(212, 175, 55, 0.6);
+        }
+
+        @keyframes brilloDorado {
+            0% {
+                color: #ffd700;
+                text-shadow: 0 0 4px rgba(255, 215, 0, 0.5), 0 0 8px rgba(255, 215, 0, 0.3);
+            }
+            100% {
+                color: #fff5cc;
+                text-shadow: 0 0 8px rgba(255, 215, 0, 0.9), 0 0 15px rgba(255, 215, 0, 0.6);
+            }
+        }
+
+        /* Efecto Brillo Celeste Finalistas */
+        .cyan-glow {
+            color: #fff !important;
+            font-weight: bold;
+            text-transform: uppercase;
+            animation: brilloCeleste 2s infinite alternate;
+            text-shadow: 0 0 4px rgba(37, 99, 235, 0.6);
+        }
+
+        @keyframes brilloCeleste {
+            0% {
+                color: #00d2ff;
+                text-shadow: 0 0 4px rgba(0, 210, 255, 0.5), 0 0 8px rgba(0, 210, 255, 0.3);
+            }
+            100% {
+                color: #e0f7fa;
+                text-shadow: 0 0 8px rgba(0, 210, 255, 0.9), 0 0 15px rgba(0, 210, 255, 0.6);
+            }
+        }
 
         .acciones-celda {
             display: flex;
@@ -387,7 +457,8 @@
         body.modo-espectador #sec-configuracion,
         body.modo-espectador .panel-principal,
         body.modo-espectador #barra-pestañas,
-        body.modo-espectador #sec-maestro-duelistas {
+        body.modo-espectador #sec-maestro-duelistas,
+        body.modo-espectador #btn-finalizar-semana {
             display: none !important;
         }
     </style>
@@ -398,7 +469,8 @@
 <div class="contenedor">
     <header>
         <h1>Master Liga DK</h1>
-        <p id="subtitulo-header">Sistema de Control, Puntuación Automatizada y Clasificación Semanal</p>
+        <p id="subtitulo-header">Pizarra Exclusiva de Resultados y Posiciones Semanales</p>
+        <button class="btn btn-accion btn-auth-header" id="btn-modo-auth">🔑 Acceso Admin</button>
     </header>
 
     <section id="sec-configuracion" class="tarjeta">
@@ -409,7 +481,7 @@
                 <button class="btn btn-peligro" id="btn-reiniciar-liga" style="font-size: 0.8rem; padding: 6px 12px;">Nueva Semana</button>
             </div>
         </div>
-        <p style="margin-bottom: 15px; color: var(--texto-mutado);">Selecciona los días activos para las jornadas de la presente semana:</p>
+        <p style="margin-bottom: 15px; color: var(--texto-mutated);">Selecciona los días activos para las jornadas de la presente semana:</p>
         <div class="grid-config">
             <label class="opcion-check"><input type="checkbox" value="Lunes" class="chk-dia"> Lunes</label>
             <label class="opcion-check"><input type="checkbox" value="Martes" class="chk-dia"> Martes</label>
@@ -455,6 +527,7 @@
                         <div class="grid-formulario">
                             <div class="grupo-control">
                                 <label for="txt-nombre-duelista">Nombre Completo (Nombre Apellido)</label>
+                                <input type="text" id="txt-nombre-guess" style="display:none;" name="bot-field">
                                 <input type="text" id="txt-nombre-duelista" placeholder="Ej: Seto Kaiba" autocomplete="off">
                                 <div class="lista-sugerencias" id="sugerencias-autocompletado"></div>
                             </div>
@@ -533,7 +606,10 @@
         <section class="tarjeta" id="sec-ranking-final">
             <div class="tarjeta-titulo">
                 <span>Clasificación y Ranking General Semanal</span>
-                <button class="btn btn-oro" id="btn-generar-pdf" style="font-size: 0.8rem; padding: 6px 12px;">Generar PDF</button>
+                <div class="zona-botones-header">
+                    <button class="btn btn-verde" id="btn-finalizar-semana" style="font-size: 0.8rem; padding: 6px 12px;">Finalizar Semana</button>
+                    <button class="btn btn-oro" id="btn-generar-pdf" style="font-size: 0.8rem; padding: 6px 12px;" disabled>Generar PDF</button>
+                </div>
             </div>
             <div class="tabla-contenedor">
                 <table id="tabla-ranking-final">
@@ -547,39 +623,35 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyB-RI1eeec07s8Fsx_T2cwj8l1GGsVWyFM",
-      authDomain: "indurama-e1644.firebaseapp.com",
-      projectId: "indurama-e1644",
-      storageBucket: "indurama-e1644.firebasestorage.app",
-      messagingSenderId: "584600212292",
-      appId: "1:584600212292:web:28f76db083af466fde7d11",
-      measurementId: "G-8K8VR2BJ23"
+        apiKey: "AIzaSyC58tN_1MeVoc32t1C3liGrQIFqpjryqW8",
+        authDomain: "ygoismaelvillamagua.firebaseapp.com",
+        projectId: "ygoismaelvillamagua",
+        storageBucket: "ygoismaelvillamagua.firebasestorage.app",
+        messagingSenderId: "624990862859",
+        appId: "1:624990862859:web:170630e1e94d29fb3d910e",
+        measurementId: "G-TXKEZS7MRT"
     };
 
     const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const dbNodeRef = ref(db, "master_liga_dk_data");
+    const db = getFirestore(app);
+    
+    const documentoLigaRef = doc(db, "master_liga_dk_data", "semana_actual");
+    const documentoKeysRef = doc(db, "master_liga_dk_data", "keys");
 
-    // --- ESTADO CENTRAL SEGURO ---
+    // --- ESTADO CENTRAL ---
     let appEstado = {
         configuracion: { diasSeleccionados: [] },
         jornadas: {},
-        maestroDuelistas: []
+        maestroDuelistas: [],
+        semanaFinalizada: false
     };
 
-    // INTENTO DE RECUPERACIÓN LOCAL PREVENTIVA ANTES DE FIREBASE
-    const respaldoLocal = localStorage.getItem('MASTER_LIGA_DK_DATA');
-    if (respaldoLocal) {
-        try {
-            appEstado = JSON.parse(respaldoLocal);
-        } catch(e) { console.error("Error parseando almacenamiento local preventivo:", e); }
-    }
-
-    let diaActivoActual = appEstado.configuracion?.diasSeleccionados?.[0] || "";
-    let esModoEspectador = false;
+    let diaActivoActual = "";
+    let esModoEspectador = true;
+    let claveAdminCorrecta = "";
 
     // --- ENLACES AL DOM ---
     const chkDias = document.querySelectorAll('.chk-dia');
@@ -587,11 +659,12 @@
     const btnReiniciarLiga = document.getElementById('btn-reiniciar-liga');
     const zonaOperativa = document.getElementById('zona-operativa');
     const barraPestañas = document.getElementById('barra-pestañas');
+    const btnModoAuth = document.getElementById('btn-modo-auth');
     
     const formRegistro = document.getElementById('form-registro-duelista');
     const txtNombre = document.getElementById('txt-nombre-duelista');
     const numMatch = document.getElementById('num-match-ganados');
-    const chkCampeon = document.getElementById('chk-campeon');
+    const chkCamp = document.getElementById('chk-campeon');
     const chkPenalizacion = document.getElementById('chk-penalizacion');
     const btnGuardarRegistro = document.getElementById('btn-guardar-registro');
     const editIndexField = document.getElementById('edit-index');
@@ -606,6 +679,8 @@
     const statTotalDuelistas = document.getElementById('stat-total-duelistas');
     const statTotalJornadas = document.getElementById('stat-total-jornadas');
     const cuerpoTablaStats = document.getElementById('cuerpo-tabla-stats');
+    
+    const btnFinalizarSemana = document.getElementById('btn-finalizar-semana');
     const btnGenerarPDF = document.getElementById('btn-generar-pdf');
 
     const secMaestroDuelistas = document.getElementById('sec-maestro-duelistas');
@@ -614,29 +689,66 @@
     const btnEliminarTodoMaestro = document.getElementById('btn-eliminar-todo-maestro');
     const cuerpoTablaMaestro = document.getElementById('cuerpo-tabla-maestro');
 
-    function detectarModoEspectador() {
-        const parametrosURL = new URLSearchParams(window.location.search);
-        if (parametrosURL.get('view') === 'spectator') {
-            esModoEspectador = true;
-            document.body.classList.add('modo-espectador');
-            document.getElementById('subtitulo-header').textContent = "Pizarra Exclusiva de Resultados y Posiciones Semanales";
+    async function cargarClaveAdmin() {
+        try {
+            const snap = await getDoc(documentoKeysRef);
+            if (snap.exists()) {
+                claveAdminCorrecta = snap.data().admin;
+            }
+        } catch (error) {
+            console.error("Error obteniendo credenciales de acceso: ", error);
         }
     }
 
-    function despacharPersistencia() {
-        if (esModoEspectador) return; 
-        localStorage.setItem('MASTER_LIGA_DK_DATA', JSON.stringify(appEstado));
-        set(dbNodeRef, appEstado).catch(err => console.error("Error de sincronización Firebase: ", err));
+    function aplicarModoVisual() {
+        if (esModoEspectador) {
+            document.body.classList.add('modo-espectador');
+            document.getElementById('subtitulo-header').textContent = "Pizarra Exclusiva de Resultados y Posiciones Semanales";
+            btnModoAuth.textContent = "🔑 Acceso Admin";
+            btnModoAuth.className = "btn btn-accion btn-auth-header";
+        } else {
+            document.body.classList.remove('modo-espectador');
+            document.getElementById('subtitulo-header').textContent = "Sistema de Control, Puntuación Automatizada y Clasificación Semanal";
+            btnModoAuth.textContent = "🔒 Cerrar Edición";
+            btnModoAuth.className = "btn btn-peligro btn-auth-header";
+        }
     }
 
-    // --- CORRECCIÓN CRÍTICA DE ONVALUE (SIN BORRADO AUTOMÁTICO EN RECARGA) ---
-    onValue(dbNodeRef, (snapshot) => {
-        const datosServidor = snapshot.val();
-        if (datosServidor) {
-            appEstado = datosServidor;
+    btnModoAuth.addEventListener('click', () => {
+        if (esModoEspectador) {
+            if (!claveAdminCorrecta) {
+                alert("Las credenciales aún no se han cargado de la base de datos.");
+                return;
+            }
+            const passIntroducido = prompt("Introduce la contraseña de Administrador:");
+            if (passIntroducido === claveAdminCorrecta) {
+                esModoEspectador = false;
+                aplicarModoVisual();
+                renderizarAplicacionCompleta();
+            } else if (passIntroducido !== null) {
+                alert("Contraseña incorrecta. Acceso denegado.");
+            }
+        } else {
+            esModoEspectador = true;
+            aplicarModoVisual();
+            renderizarAplicacionCompleta();
+        }
+    });
+
+    function despacharPersistencia() {
+        if (esModoEspectador) return; 
+        setDoc(documentoLigaRef, appEstado).catch(err => console.error("Error de sincronización Firestore: ", err));
+    }
+
+    onSnapshot(documentoLigaRef, (snapshot) => {
+        if (snapshot.exists()) {
+            appEstado = snapshot.data();
             if (!appEstado.maestroDuelistas) appEstado.maestroDuelistas = [];
             if (!appEstado.jornadas) appEstado.jornadas = {};
-            if (!appArchiveValidaConfig()) appEstado.configuracion = { diasSeleccionados: [] };
+            if (appEstado.semanaFinalizada === undefined) appEstado.semanaFinalizada = false;
+            if (!appEstado.configuracion || !appEstado.configuracion.diasSeleccionados) {
+                appEstado.configuracion = { diasSeleccionados: [] };
+            }
             
             if (appEstado.configuracion.diasSeleccionados.length > 0 && !diaActivoActual) {
                 diaActivoActual = appEstado.configuracion.diasSeleccionados[0];
@@ -647,29 +759,31 @@
                     c.checked = appEstado.configuracion.diasSeleccionados.includes(c.value);
                 });
             }
-            localStorage.setItem('MASTER_LIGA_DK_DATA', JSON.stringify(appEstado));
-            renderizarAplicacionCompleta();
         } else {
-            // Si el nodo de la BD está completamente limpio en el servidor, guardamos lo que tenemos localmente
-            if (!esModoEspectador && appEstado.maestroDuelistas.length > 0) {
-                despacharPersistencia();
+            if (!esModoEspectador) {
+                appEstado = {
+                    configuracion: { diasSeleccionados: [] },
+                    jornadas: {},
+                    maestroDuelistas: [],
+                    semanaFinalizada: false
+                };
             }
-            renderizarAplicacionCompleta();
         }
+        renderizarAplicacionCompleta();
     });
 
-    function appArchiveValidaConfig() {
-        return appEstado.configuracion && appEstado.configuracion.diasSeleccionados;
-    }
-
-    detectarModoEspectador();
+    await cargarClaveAdmin();
+    aplicarModoVisual();
     configurarEventosBusqueda();
-    renderizarAplicacionCompleta(); // Render inicial con caché de localstorage mientras responde Firebase
 
     btnInicializar.addEventListener('click', () => {
+        if (appEstado.semanaFinalizada) {
+            alert("No se puede alterar la estructura porque esta semana ya fue Finalizada.");
+            return;
+        }
         const seleccionados = Array.from(chkDias).filter(c => c.checked).map(c => c.value);
         if (seleccionados.length === 0) {
-            alert("Atención: Debes seleccionar al menos un día para estructurar la liga de esta semana.");
+            alert("Atención: Debes seleccionar al menos un día para estructurar la liga.");
             return;
         }
         
@@ -684,17 +798,31 @@
 
         diaActivoActual = seleccionados[0];
         despacharPersistencia();
-        renderizarAplicacionCompleta();
     });
 
     btnReiniciarLiga.addEventListener('click', () => {
-        if (confirm("¿Estás seguro de iniciar una nueva liga semanal? Esto restablecerá los calendarios y las tablas semanales, manteniendo la lista de competidores históricos.")) {
+        if (confirm("¿Estás seguro de iniciar una nueva liga semanal? Esto restablecerá los calendarios, marcas de finalización y tablas semanales.")) {
             appEstado.configuracion.diasSeleccionados = [];
             appEstado.jornadas = {};
+            appEstado.semanaFinalizada = false;
             diaActivoActual = "";
             chkDias.forEach(c => c.checked = false);
             despacharPersistencia();
-            renderizarAplicacionCompleta();
+        }
+    });
+
+    // Cambiado dinámicamente para soportar cancelación / reapertura semanal
+    btnFinalizarSemana.addEventListener('click', () => {
+        if (appEstado.semanaFinalizada) {
+            if (confirm("¿Deseas CANCELAR el cierre semanal y habilitar modificaciones? Esto reactivará las funciones de edición y bloqueará la generación de reportes PDF.")) {
+                appEstado.semanaFinalizada = false;
+                despacharPersistencia();
+            }
+        } else {
+            if (confirm("¿Estás seguro de FINALIZAR la semana actual? Esto habilitará las descargas oficiales en PDF y otorgará los títulos definitivos a los ganadores en el podio.")) {
+                appEstado.semanaFinalizada = true;
+                despacharPersistencia();
+            }
         }
     });
 
@@ -711,9 +839,7 @@
     btnGenerarPDF.addEventListener('click', exportarClasificacionPDF);
 
     function exportarClasificacionPDF() {
-        const tablaOriginal = document.getElementById('tabla-ranking-final');
-        const plantillaClonada = tablaOriginal.cloneNode(true);
-
+        const tableContent = document.getElementById('tabla-ranking-final').cloneNode(true);
         const canvasContenedor = document.createElement('div');
         canvasContenedor.style.padding = '20px';
         canvasContenedor.style.backgroundColor = '#161820';
@@ -721,35 +847,33 @@
         canvasContenedor.style.fontFamily = 'Segoe UI, sans-serif';
         
         const bannerEncabezado = document.createElement('h2');
-        bannerEncabezado.textContent = "MASTER LIGA DK - TABLA GENERAL DE POSICIONES";
+        bannerEncabezado.textContent = "MASTER LIGA DK - REPORTE OFICIAL DE POSICIONES FINALES";
         bannerEncabezado.style.color = '#d4af37';
         bannerEncabezado.style.textAlign = 'center';
         bannerEncabezado.style.marginBottom = '25px';
-        bannerEncabezado.style.textTransform = 'uppercase';
         
-        plantillaClonada.style.width = "100%";
-        plantillaClonada.style.borderCollapse = "collapse";
-        plantillaClonada.style.color = "#f5f6fa";
+        tableContent.style.width = "100%";
+        tableContent.style.borderCollapse = "collapse";
         
-        plantillaClonada.querySelectorAll('th').forEach(th => {
+        tableContent.querySelectorAll('th').forEach(th => {
             th.style.backgroundColor = '#1a1d29';
             th.style.color = '#d4af37';
             th.style.padding = '12px';
             th.style.border = '1px solid #2a2e3d';
         });
 
-        plantillaClonada.querySelectorAll('td').forEach(td => {
+        tableContent.querySelectorAll('td').forEach(td => {
             td.style.padding = '10px';
             td.style.border = '1px solid #2a2e3d';
             if(!td.style.color) td.style.color = '#f5f6fa';
         });
 
         canvasContenedor.appendChild(bannerEncabezado);
-        canvasContenedor.appendChild(plantillaClonada);
+        canvasContenedor.appendChild(tableContent);
 
         const configuracionesImpresion = {
             margin:       10,
-            filename:     'Clasificacion_Semanal_Master_Liga_DK.pdf',
+            filename:     'Reporte_Oficial_Master_Liga_DK.pdf',
             image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { scale: 2, backgroundColor: '#161820', useCORS: true },
             jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
@@ -766,6 +890,20 @@
         }
 
         zonaOperativa.style.display = "block";
+        
+        // Control de vistas por finalización o reapertura de semanas
+        if (appEstado.semanaFinalizada) {
+            btnGenerarPDF.removeAttribute('disabled');
+            btnFinalizarSemana.className = "btn btn-azul";
+            btnFinalizarSemana.textContent = "🔧 Habilitar Modificaciones";
+            btnGuardarRegistro.setAttribute('disabled', 'true');
+        } else {
+            btnGenerarPDF.setAttribute('disabled', 'true');
+            btnFinalizarSemana.className = "btn btn-verde";
+            btnFinalizarSemana.textContent = "✅ Finalizar Semana";
+            btnGuardarRegistro.removeAttribute('disabled');
+        }
+
         if (!esModoEspectador) {
             renderizarBarraPestañas();
             renderizarTablaJornada(diaActivoActual);
@@ -836,25 +974,27 @@
                 <td style="font-weight: bold; color: var(--oro);">${reg.puntos} pts</td>
                 <td><small>${tagEstado}</small></td>
                 <td class="acciones-celda">
-                    <button class="btn btn-accion" id="btn-edit-${index}">Editar</button>
-                    <button class="btn btn-accion btn-peligro" id="btn-del-${index}">Eliminar</button>
+                    <button class="btn btn-accion" id="btn-edit-${index}" ${appEstado.semanaFinalizada ? 'disabled' : ''}>Editar</button>
+                    <button class="btn btn-accion btn-peligro" id="btn-del-${index}" ${appEstado.semanaFinalizada ? 'disabled' : ''}>Eliminar</button>
                 </td>
             `;
             cuerpoTablaJornada.appendChild(fila);
 
-            document.getElementById(`btn-edit-${index}`).addEventListener('click', () => cargarRegistroParaEditar(index));
-            document.getElementById(`btn-del-${index}`).addEventListener('click', () => eliminarRegistroDuelista(index));
+            if (!appEstado.semanaFinalizada) {
+                document.getElementById(`btn-edit-${index}`).addEventListener('click', () => cargarRegistroParaEditar(index));
+                document.getElementById(`btn-del-${index}`).addEventListener('click', () => eliminarRegistroDuelista(index));
+            }
         });
 
         if (cuerpoTablaJornada.innerHTML === "") {
-            cuerpoTablaJornada.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--texto-mutado);">No hay registros para esta jornada o no coinciden con la búsqueda.</td></tr>`;
+            cuerpoTablaJornada.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--texto-mutado);">No hay registros para esta jornada.</td></tr>`;
         }
     }
 
     function renderizarTablaMaestro() {
         cuerpoTablaMaestro.innerHTML = "";
         if (!appEstado.maestroDuelistas || appEstado.maestroDuelistas.length === 0) {
-            cuerpoTablaMaestro.innerHTML = `<tr><td colspan="2" style="text-align: center; color: var(--texto-mutado);">Base de datos vacía. Registra jugadores en el panel principal.</td></tr>`;
+            cuerpoTablaMaestro.innerHTML = `<tr><td colspan="2" style="text-align: center; color: var(--texto-mutado);">Base de datos vacía.</td></tr>`;
             return;
         }
 
@@ -863,14 +1003,16 @@
             fila.innerHTML = `
                 <td><strong>${duelista}</strong></td>
                 <td class="acciones-celda">
-                    <button class="btn btn-accion" id="btn-edit-maestro-${index}">Modificar Nombre</button>
-                    <button class="btn btn-accion btn-peligro" id="btn-del-maestro-${index}">Eliminar de BD</button>
+                    <button class="btn btn-accion" id="btn-edit-maestro-${index}" ${appEstado.semanaFinalizada ? 'disabled' : ''}>Modificar Nombre</button>
+                    <button class="btn btn-accion btn-peligro" id="btn-del-maestro-${index}" ${appEstado.semanaFinalizada ? 'disabled' : ''}>Eliminar de BD</button>
                 </td>
             `;
             cuerpoTablaMaestro.appendChild(fila);
 
-            document.getElementById(`btn-edit-maestro-${index}`).addEventListener('click', () => modificarNombreDuelistaMaestro(duelista));
-            document.getElementById(`btn-del-maestro-${index}`).addEventListener('click', () => eliminarDuelistaMaestro(duelista));
+            if (!appEstado.semanaFinalizada) {
+                document.getElementById(`btn-edit-maestro-${index}`).addEventListener('click', () => modificarNombreDuelistaMaestro(duelista));
+                document.getElementById(`btn-del-maestro-${index}`).addEventListener('click', () => eliminarDuelistaMaestro(duelista));
+            }
         });
     }
 
@@ -928,7 +1070,7 @@
 
         cabeceraRanking.innerHTML = "";
         const filaCabecera = document.createElement('tr');
-        filaCabecera.innerHTML = `<th>Lugar</th><th>Nombre</th>`;
+        filaCabecera.innerHTML = `<th>Lugar / Distinción</th><th>Nombre</th>`;
         diasSeleccionados.forEach(dia => { filaCabecera.innerHTML += `<th>${dia}</th>`; });
         filaCabecera.innerHTML += `<th>Total Acumulado</th>`;
         cabeceraRanking.appendChild(filaCabecera);
@@ -938,12 +1080,39 @@
             nombre: key, ...resumenSemanal[key]
         })).sort((a, b) => b.total - a.total);
 
-        competidoresOrdenados.forEach((comp, index) => {
+        // --- CÁLCULO DE POSICIONES CON LOGICA DE EMPATES ---
+        let posicionReal = 0;
+        let ultimoPuntaje = -1;
+        let competidoresConPosicion = competidoresOrdenados.map((comp, index) => {
+            if (comp.total !== ultimoPuntaje) {
+                posicionReal = index + 1;
+                ultimoPuntaje = comp.total;
+            }
+            return { ...comp, rangoCalculado: posicionReal };
+        });
+
+        competidoresConPosicion.forEach((comp) => {
             const filaR = document.createElement('tr');
-            let medalla = `${index + 1}°`;
-            if (index === 0) medalla = "🥇 Campeón";
-            if (index === 1) medalla = "🥈 2do Lugar";
-            if (index === 2) medalla = "🥉 3er Lugar";
+            let etiquetaPosicion = "";
+
+            if (appEstado.semanaFinalizada) {
+                if (comp.rangoCalculado === 1) etiquetaPosicion = "🏆 CAMPEÓN MASTER LIGA";
+                else if (comp.rangoCalculado === 2) etiquetaPosicion = "🥈 FINALISTA MASTER LIGA";
+                else etiquetaPosicion = `${comp.rangoCalculado}° Lugar`;
+            } else {
+                if (comp.rangoCalculado === 1) etiquetaPosicion = "🥇 1ro";
+                else if (comp.rangoCalculado === 2) etiquetaPosicion = "🥈 2do";
+                else if (comp.rangoCalculado === 3) etiquetaPosicion = "🥉 3ro";
+                else etiquetaPosicion = `${comp.rangoCalculado}°`;
+            }
+
+            // Asignación de clases dinámicas para brillos de Puntero (Oro) y Finalista (Celeste)
+            let claseNombre = '';
+            if (comp.rangoCalculado === 1) {
+                claseNombre = 'class="gold-glow"';
+            } else if (comp.rangoCalculado === 2) {
+                claseNombre = 'class="cyan-glow"';
+            }
 
             let celdasDiasHtml = "";
             diasSeleccionados.forEach(dia => {
@@ -957,8 +1126,8 @@
             });
 
             filaR.innerHTML = `
-                <td style="font-weight: bold; color: var(--oro);">${medalla}</td>
-                <td style="font-weight: bold;">${comp.nombre}</td>
+                <td style="font-weight: bold; color: var(--oro); white-space: nowrap;">${etiquetaPosicion}</td>
+                <td ${claseNombre} style="font-weight: bold;">${comp.nombre}</td>
                 ${celdasDiasHtml}
                 <td style="font-weight: bold; font-size: 1.1rem; color: #fff;">${comp.total} pts</td>
             `;
@@ -972,9 +1141,11 @@
     }
 
     function procesarFormularioDuelista() {
+        if (appEstado.semanaFinalizada) return;
+
         let nombreRaw = txtNombre.value.trim();
         const matchG = parseInt(numMatch.value) || 0;
-        const esCamp = chkCampeon.checked;
+        const esCamp = chkCamp.checked;
         const esPenal = chkPenalizacion.checked;
         const indexEdicion = editIndexField.value;
 
@@ -985,7 +1156,7 @@
 
         nombreRaw = nombreRaw.split(/\s+/).map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join(" ");
         if (nombreRaw.split(" ").length < 2) {
-            alert("Estructura inválida: Introduce obligatoriamente Nombre y Apellido.");
+            alert("Estructura inválida: Introduce Nombre y Apellido.");
             return;
         }
 
@@ -1016,15 +1187,15 @@
 
         despacharPersistencia();
         resetearFormulario();
-        renderizarAplicacionCompleta();
     }
 
     function cargarRegistroParaEditar(index) {
+        if (appEstado.semanaFinalizada) return;
         const reg = appEstado.jornadas[diaActivoActual][index];
         if (reg) {
             txtNombre.value = reg.nombre;
             numMatch.value = reg.matchGanados;
-            chkCampeon.checked = reg.campeon;
+            chkCamp.checked = reg.campeon;
             chkPenalizacion.checked = reg.penalizacion;
             editIndexField.value = index;
             document.getElementById('btn-guardar-registro').textContent = "Actualizar Registro";
@@ -1033,14 +1204,15 @@
     }
 
     function eliminarRegistroDuelista(index) {
+        if (appEstado.semanaFinalizada) return;
         if (confirm("¿Estás seguro de que deseas eliminar este registro de la jornada?")) {
             appEstado.jornadas[diaActivoActual].splice(index, 1);
             despacharPersistencia();
-            renderizarAplicacionCompleta();
         }
     }
 
     function modificarNombreDuelistaMaestro(viejoNombre) {
+        if (appEstado.semanaFinalizada) return;
         let nuevoNombre = prompt(`Modificar el nombre de "${viejoNombre}":`, viejoNombre);
         if (nuevoNombre === null) return; 
 
@@ -1061,31 +1233,28 @@
             });
 
             despacharPersistencia();
-            renderizarAplicacionCompleta();
         }
     }
 
     function eliminarDuelistaMaestro(nombreDuelista) {
-        if (confirm(`¿Estás seguro de eliminar a "${nombreDuelista}" de la BD?\nEsto borrará su participación semanal.`)) {
+        if (appEstado.semanaFinalizada) return;
+        if (confirm(`¿Estás seguro de eliminar a "${nombreDuelista}" de la BD?`)) {
             appEstado.maestroDuelistas = appEstado.maestroDuelistas.filter(nom => nom !== nombreDuelista);
             Object.keys(appEstado.jornadas).forEach(dia => {
                 appEstado.jornadas[dia] = appEstado.jornadas[dia].filter(reg => reg.nombre !== nombreDuelista);
             });
 
             despacharPersistencia();
-            renderizarAplicacionCompleta();
         }
     }
 
     function eliminarTodosLosDuelistasMaestro() {
-        if (confirm("¿Estás seguro de que deseas ELIMINAR A TODOS los duelistas de la base de datos históricos?")) {
-            if (confirm("¿Confirmas por segunda vez la limpieza total?")) {
-                appEstado.maestroDuelistas = [];
-                Object.keys(appEstado.jornadas).forEach(dia => { appEstado.jornadas[dia] = []; });
-                despacharPersistencia();
-                secMaestroDuelistas.style.display = "none";
-                renderizarAplicacionCompleta();
-            }
+        if (appEstado.semanaFinalizada) return;
+        if (confirm("¿Estás seguro de que deseas ELIMINAR A TODOS los duelistas?")) {
+            appEstado.maestroDuelistas = [];
+            Object.keys(appEstado.jornadas).forEach(dia => { appEstado.jornadas[dia] = []; });
+            despacharPersistencia();
+            secMaestroDuelistas.style.display = "none";
         }
     }
 
@@ -1098,7 +1267,7 @@
 
     function configurarEventosBusqueda() {
         txtNombre.addEventListener('input', () => {
-            if (esModoEspectador) return;
+            if (esModoEspectador || appEstado.semanaFinalizada) return;
             const inputVal = txtNombre.value.toLowerCase().trim();
             sugerenciasBox.innerHTML = "";
             if (!inputVal) { sugerenciasBox.style.display = "none"; return; }

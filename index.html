@@ -2,7 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bloqueo estricto de zoom por gestos táctiles mediante viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MASTER LIGA DK - Sistema de Gestión Firebase</title>
     <style>
         /* ==========================================================================
@@ -36,32 +37,40 @@
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* Inhabilitación complementaria de zoom y gestos no deseados en móviles */
+            touch-action: pan-x pan-y;
         }
 
         body {
             background-color: var(--bg-principal);
             color: var(--texto-claro);
-            padding: 20px;
+            padding: 15px;
             line-height: 1.6;
+            overflow-x: hidden; /* Previene desbordamiento lateral a nivel global */
         }
 
         .contenedor {
             max-width: 1200px;
             margin: 0 auto;
+            width: 100%;
         }
 
         /* Header Principal */
         header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             padding-bottom: 20px;
             border-bottom: 2px solid var(--oro);
             position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
         }
 
         header h1 {
             color: var(--oro);
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             letter-spacing: 2px;
             text-transform: uppercase;
             text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
@@ -69,7 +78,8 @@
 
         header p {
             color: var(--texto-mutado);
-            font-size: 1rem;
+            font-size: 0.95rem;
+            max-width: 90%;
         }
 
         .btn-auth-header {
@@ -78,21 +88,15 @@
             top: 10px;
         }
 
-        @media (max-width: 600px) {
-            .btn-auth-header {
-                position: static;
-                margin-top: 10px;
-            }
-        }
-
         /* Componentes de Tarjetas Modernas */
         .tarjeta {
             background-color: var(--bg-tarjeta);
             border: 1px solid #2a2e3d;
             border-radius: var(--borde-radio);
-            padding: 25px;
-            margin-bottom: 25px;
+            padding: 20px;
+            margin-bottom: 20px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            width: 100%;
         }
 
         /* Variaciones de Fondo para romper monotonía */
@@ -108,7 +112,7 @@
 
         .tarjeta-titulo {
             color: var(--oro);
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             margin-bottom: 20px;
             text-transform: uppercase;
             border-left: 4px solid var(--oro);
@@ -117,19 +121,20 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 12px;
         }
 
         .zona-botones-header {
             display: flex;
             gap: 10px;
+            flex-wrap: wrap;
         }
 
-        /* GRID Estructura */
+        /* GRID Estructura adaptable */
         .grid-config {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 12px;
             margin-bottom: 20px;
         }
 
@@ -143,7 +148,8 @@
         .panel-principal {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 25px;
+            gap: 20px;
+            width: 100%;
         }
 
         /* ==========================================================================
@@ -154,22 +160,24 @@
             flex-direction: column;
             gap: 5px;
             position: relative;
+            width: 100%;
         }
 
         label {
             color: var(--texto-mutado);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         input[type="text"], input[type="number"], select {
             background-color: var(--bg-entrada);
             border: 1px solid #3a3f52;
             color: var(--texto-claro);
-            padding: 10px 12px;
+            padding: 12px; /* Mejor área táctil en celulares */
             border-radius: var(--borde-radio);
             font-size: 1rem;
             width: 100%;
             transition: var(--transicion);
+            -webkit-appearance: none; /* Quita estilos por defecto de Safari iOS */
         }
 
         input:focus, select:focus {
@@ -189,6 +197,7 @@
             border: 1px solid #3a3f52;
             transition: var(--transicion);
             user-select: none;
+            width: 100%;
         }
 
         .opcion-check:hover {
@@ -197,14 +206,14 @@
 
         .opcion-check input[type="checkbox"] {
             accent-color: var(--oro);
-            width: 18px;
-            height: 18px;
+            width: 20px; /* Incrementado para facilitar la pulsación en pantallas táctiles */
+            height: 20px;
         }
 
         .btn {
-            padding: 10px 20px;
+            padding: 12px 20px; /* Mejor tamaño vertical táctil */
             border-radius: var(--borde-radio);
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
             transition: var(--transicion);
@@ -215,6 +224,7 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            max-width: 100%;
         }
 
         .btn:disabled {
@@ -236,7 +246,7 @@
         }
 
         .btn-accion {
-            padding: 5px 10px;
+            padding: 8px 14px;
             font-size: 0.85rem;
             background-color: var(--bg-entrada);
             color: var(--texto-claro);
@@ -290,16 +300,19 @@
         }
 
         /* ==========================================================================
-           3. SISTEMA DE PESTAÑAS (Tabs Dinámicas)
+           3. SISTEMA DE PESTAÑAS (Tabs Dinámicas Adaptadas)
            ========================================================================== */
         .contenedor-tabs {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
             border-bottom: 1px solid #2a2e3d;
-            padding-bottom: 10px;
+            padding-bottom: 12px;
             overflow-x: auto;
             align-items: center;
+            width: 100%;
+            scrollbar-width: thin; /* Estilizado sutil en Firefox */
+            -webkit-overflow-scrolling: touch; /* Desplazamiento fluido nativo en iOS */
         }
 
         .tab-contenedor-individual {
@@ -308,8 +321,9 @@
             background-color: var(--bg-tarjeta);
             border: 1px solid #2a2e3d;
             border-radius: var(--borde-radio);
-            padding: 2px;
-            gap: 2px;
+            padding: 3px;
+            gap: 3px;
+            flex-shrink: 0; /* Evita que las pestañas colapsen en pantallas angostas */
         }
 
         .tab-contenedor-individual.activa {
@@ -320,12 +334,13 @@
             background: transparent;
             color: var(--texto-mutado);
             border: none;
-            padding: 8px 16px;
+            padding: 10px 16px;
             border-radius: calc(var(--borde-radio) - 2px);
             cursor: pointer;
             font-weight: 600;
             white-space: nowrap;
             transition: var(--transicion);
+            font-size: 0.9rem;
         }
 
         .tab-boton:hover {
@@ -344,7 +359,7 @@
             padding: 8px;
             cursor: pointer;
             border-radius: calc(var(--borde-radio) - 2px);
-            font-size: 0.85rem;
+            font-size: 0.95rem;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -364,6 +379,7 @@
             margin-top: 15px;
             border-radius: var(--borde-radio);
             border: 1px solid #2a2e3d;
+            -webkit-overflow-scrolling: touch;
         }
 
         table {
@@ -371,6 +387,7 @@
             border-collapse: collapse;
             text-align: left;
             font-size: 0.95rem;
+            min-width: 500px; /* Asegura legibilidad y evita compresión exagerada en móvil */
         }
 
         th {
@@ -382,12 +399,14 @@
             font-size: 0.85rem;
             letter-spacing: 0.5px;
             border-bottom: 2px solid #2a2e3d;
+            white-space: nowrap;
         }
 
         td {
             padding: 12px 14px;
             border-bottom: 1px solid #2a2e3d;
             vertical-align: middle;
+            white-space: nowrap; /* Evita saltos de línea antiestéticos en celdas de datos */
         }
 
         tr.estado-normal { background-color: transparent; }
@@ -441,16 +460,17 @@
             background: linear-gradient(135deg, #1f1135 0%, #0b0616 100%);
             border: 3px double var(--oro);
             border-radius: var(--borde-radio);
-            padding: 25px;
+            padding: 20px;
             text-align: center;
             margin-bottom: 25px;
             animation: pulsoBanner 2.5s infinite ease-in-out;
             display: none;
+            width: 100%;
         }
 
         .banner-king-titulo {
-            font-size: 2.2rem;
-            letter-spacing: 3px;
+            font-size: 1.8rem;
+            letter-spacing: 2px;
             text-transform: uppercase;
             font-weight: 900;
             background: linear-gradient(to right, #ffd700, #ff00de, #00d2ff, #ffd700);
@@ -458,6 +478,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: brilloTextoGradiente 4s linear infinite;
+            word-wrap: break-word;
         }
 
         @keyframes pulsoBanner {
@@ -503,8 +524,74 @@
         }
 
         /* ==========================================================================
-           5. RESTRICCIONES DE VISTA ESTRICTAS PARA MODO ESPECTADOR
-           Oculta absolutamente todo excepto el Ranking Semanal y el Historial Anual
+           5. ADAPTABILIDAD EXCLUSIVA MÓVIL (Mantenimiento de Orientación Vertical/Horizontal)
+           ========================================================================== */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .tarjeta {
+                padding: 15px;
+            }
+
+            .tarjeta-titulo {
+                font-size: 1.1rem;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .zona-botones-header {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .zona-botones-header .btn {
+                flex: 1 1 auto; /* Botones expandibles proporcionalmente */
+                text-align: center;
+            }
+
+            header .btn-auth-header {
+                position: static;
+                width: 100%;
+                margin-top: 5px;
+            }
+
+            .grid-formulario {
+                grid-template-columns: 1fr; /* Todo en una columna limpia en móviles verticales */
+            }
+
+            .banner-king-titulo {
+                font-size: 1.4rem;
+            }
+        }
+
+        /* Optimizaciones estructurales específicas para modo Horizontal en Móviles */
+        @media (max-width: 900px) and (orientation: landscape) {
+            header {
+                flex-direction: row;
+                justify-content: space-between;
+                padding-bottom: 10px;
+            }
+            header .btn-auth-header {
+                position: static;
+                width: auto;
+                margin-top: 0;
+            }
+            .grid-formulario {
+                grid-template-columns: repeat(2, 1fr); /* Dos columnas fluidas para aprovechar el ancho */
+            }
+            #form-registro-duelista .grid-formulario div:last-child {
+                grid-column: span 2; /* Botón guardar expandido completo horizontalmente */
+            }
+        }
+
+        /* ==========================================================================
+           6. RESTRICCIONES DE VISTA ESTRICTAS PARA MODO ESPECTADOR
            ========================================================================== */
         body.modo-espectador #sec-configuracion,
         body.modo-espectador #sec-maestro-duelistas,
@@ -533,9 +620,9 @@
 
     <!-- Banner Altamente Llamativo de Campeón Anual -->
     <div id="banner-campeon-anual" class="banner-king">
-        <p style="color: var(--oro); font-size: 0.9rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 5px;">👑 Salón de la Fama Legendario 👑</p>
+        <p style="color: var(--oro); font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 5px;">👑 Salón de la Fama Legendario 👑</p>
         <div id="texto-campeon-anual" class="banner-king-titulo">CONQUISTADOR ANUAL</div>
-        <p style="color: #00d2ff; font-size: 0.95rem; margin-top: 5px; letter-spacing: 1px;">DUELIST KINGDOM MASTER DUELIST</p>
+        <p style="color: #00d2ff; font-size: 0.85rem; margin-top: 5px; letter-spacing: 1px;">DUELIST KINGDOM MASTER DUELIST</p>
     </div>
 
     <section id="sec-configuracion" class="tarjeta">
@@ -556,7 +643,7 @@
             <label class="opcion-check"><input type="checkbox" value="Sábado" class="chk-dia"> Sábado</label>
             <label class="opcion-check"><input type="checkbox" value="Domingo" class="chk-dia"> Domingo</label>
         </div>
-        <button class="btn btn-oro" id="btn-inicializar">Establecer Estructura Semanal</button>
+        <button class="btn btn-oro" id="btn-inicializar" style="width: 100%;">Establecer Estructura Semanal</button>
     </section>
 
     <section id="sec-maestro-duelistas" class="tarjeta" style="display: none;">
@@ -684,31 +771,31 @@
                 </div>
             </form>
         </section>
-
-        <!-- Tabla de Clasificación de Campeones Mensuales (Master Stars) -->
-        <section class="tarjeta" id="sec-ranking-anual">
-            <div class="tarjeta-titulo">
-                <span>Historial Anual: Master Duelist Champion</span>
-                <div class="zona-botones-header">
-                    <button class="btn btn-peligro" id="btn-eliminar-tabla-anual" style="font-size: 0.8rem; padding: 6px 12px;">Eliminar Tabla Anual</button>
-                    <button class="btn btn-purpura" id="btn-finalizar-anual" style="font-size: 0.8rem; padding: 6px 12px;">Finalizar Master Liga Anual</button>
-                </div>
-            </div>
-            <div class="tabla-contenedor">
-                <table id="tabla-master-champion">
-                    <thead>
-                        <tr>
-                            <th>Mes Evaluado</th>
-                            <th>Nombre del Campeón</th>
-                            <th>Master Star Acumuladas</th>
-                            <th class="columna-acciones-anual">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="cuerpo-master-champion"></tbody>
-                </table>
-            </div>
-        </section>
     </div>
+
+    <!-- Tabla de Clasificación de Campeones Mensuales (Master Stars) - Fuera de zona-operativa -->
+    <section class="tarjeta" id="sec-ranking-anual">
+        <div class="tarjeta-titulo">
+            <span>Historial Anual: Master Duelist Champion</span>
+            <div class="zona-botones-header">
+                <button class="btn btn-peligro" id="btn-eliminar-tabla-anual" style="font-size: 0.8rem; padding: 6px 12px;">Eliminar Tabla Anual</button>
+                <button class="btn btn-purpura" id="btn-finalizar-anual" style="font-size: 0.8rem; padding: 6px 12px;">Finalizar Master Liga Anual</button>
+            </div>
+        </div>
+        <div class="tabla-contenedor">
+            <table id="tabla-master-champion">
+                <thead>
+                    <tr>
+                        <th>Mes Evaluado</th>
+                        <th>Nombre del Campeón</th>
+                        <th>Master Star Acumuladas</th>
+                        <th class="columna-acciones-anual">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpo-master-champion"></tbody>
+            </table>
+        </div>
+    </section>
 </div>
 
 <script type="module">
@@ -960,6 +1047,7 @@
         const diasActivos = appEstado.configuracion?.diasSeleccionados;
         if (!diasActivos || diasActivos.length === 0) {
             zonaOperativa.style.display = "none";
+            renderizarTablaAnualYCampeones();
             return;
         }
 
@@ -998,7 +1086,6 @@
     function abrirSelectorFechaModal(dia) {
         if (appEstado.semanaFinalizada) return;
 
-        // Crear Modal
         const modal = document.createElement('div');
         modal.style = `
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -1078,7 +1165,6 @@
             btn.className = `tab-boton`;
             const numParticipantes = appEstado.jornadas[dia] ? appEstado.jornadas[dia].length : 0;
             
-            // Si hay una fecha guardada para este día, la añadimos al texto
             const fechaGuardada = appEstado.fechasJornadas && appEstado.fechasJornadas[dia] ? ` [${appEstado.fechasJornadas[dia]}]` : "";
             btn.textContent = `${dia}${fechaGuardada} (${numParticipantes})`;
             
@@ -1093,7 +1179,7 @@
             btnFecha.title = 'Asignar Fecha al día';
             btnFecha.style.display = esModoEspectador ? 'none' : 'block';
             btnFecha.addEventListener('click', (e) => {
-                e.stopPropagation(); // Evita cambiar de pestaña al configurar la fecha
+                e.stopPropagation(); 
                 abrirSelectorFechaModal(dia);
             });
 
@@ -1134,10 +1220,8 @@
         let registros = appEstado.jornadas[dia] || [];
         const filtro = txtBusquedaTabla.value.toLowerCase().trim();
 
-        // Creamos una copia con el índice original antes de ordenar para no romper los botones de editar/eliminar
         let registrosMapeados = registros.map((reg, originalIndex) => ({ ...reg, originalIndex }));
 
-        // Ordenar de mayor a menor según los puntos obtenidos
         registrosMapeados.sort((a, b) => b.puntos - a.puntos);
 
         registrosMapeados.forEach((reg) => {
@@ -1285,10 +1369,9 @@
         }
     }
 
-    // --- LOGICA Y PROCESAMIENTO DEL CONTROL ANUAL ---
     const mesesDelAno = [
         "LIGA ENERO", "LIGA FEBRERO", "LIGA MARZO", "LIGA ABRIL", "LIGA MAYO", "LIGA JUNIO",
-        "LIGA JULIO", "LIGA AGOSTO", "LIGA SEPTIEMBRE", "LIGA OCTUBRE", "LIGA NOVIEMBRE", "LIGA DICIEMBRE"
+        "LIGA JULIO", "LIGA AGOSTO", "LIGA SEPTIEMBRE", "LIGA OCTUBRE", "LIGA NOVIEMBRE", "LIGA DICIEMARE"
     ];
 
     function procesarCampeonMensual() {
@@ -1366,7 +1449,6 @@
             cuerpoMasterChampion.appendChild(filaM);
         });
 
-        // Asignar eventos a los botones de eliminación individual de meses
         document.querySelectorAll('.btn-del-mes').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const mes = e.target.getAttribute('data-mes');

@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MASTER LIGA DK - Sistema de Gestión Firebase</title>
+    <style>
+        /* ==========================================================================
+           1. VARIABLES Y DISEÑO BASE (Temática Yu-Gi-Oh! Dark & Gold)
+           ========================================================================== */
+        :root {
+            --bg-principal: #0d0e12;
+            --bg-tarjeta: #161820;
+            --bg-entrada: #1f222e;
+            --oro: #d4af37;
+            --oro-brillo: #f3e5ab;
+            --texto-claro: #f5f6fa;
+            --texto-mutado: #8a8f9e;
+            
+            /* Colores de Estado de Duelistas */
+            --estado-normal: #1f222e;
+            --estado-campeon: #1b4d3e;
+            --estado-penalizado: #661d1d;
+            --estado-ambos: #594a13;
+            
+            --texto-campeon: #52c41a;
+            --texto-penalizado: #ff4d4f;
+            --texto-ambos: #ffc53d;
+            
+            --borde-radio: 8px;
+            --transicion: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-principal);
+            color: var(--texto-claro);
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .contenedor {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header Principal */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--oro);
+        }
+
+        header h1 {
+            color: var(--oro);
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        header p {
+            color: var(--texto-mutated || var(--texto-mutado));
+            font-size: 1rem;
+        }
+
+        /* Componentes de Tarjetas Modernas */
+        .tarjeta {
+            background-color: var(--bg-tarjeta);
+            border: 1px solid #2a2e3d;
+            border-radius: var(--borde-radio);
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .tarjeta-titulo {
+            color: var(--oro);
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            border-left: 4px solid var(--oro);
+            padding-left: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .zona-botones-header {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* GRID Estructura */
+        .grid-config {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .grid-formulario {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        .panel-principal {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 900px) {
+            .panel-principal {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ==========================================================================
+           2. ELEMENTOS DE FORMULARIO Y BOTONES
+           ========================================================================== */
+        .grupo-control {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            position: relative;
+        }
+
+        label {
+            color: var(--texto-mutado);
+            font-size: 0.9rem;
+        }
+
+        input[type="text"], input[type="number"], select {
+            background-color: var(--bg-entrada);
+            border: 1px solid #3a3f52;
+            color: var(--texto-claro);
+            padding: 10px 12px;
+            border-radius: var(--borde-radio);
+            font-size: 1rem;
+            width: 100%;
+            transition: var(--transicion);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--oro);
+            box-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
+        }
+
+        /* Casillas de Verificación Estilizadas */
+        .opcion-check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: var(--bg-entrada);
+            padding: 12px;
+            border-radius: var(--borde-radio);
+            cursor: pointer;
+            border: 1px solid #3a3f52;
+            transition: var(--transicion);
+            user-select: none;
+        }
+
+        .opcion-check:hover {
+            border-color: var(--oro);
+        }
+
+        .opcion-check input[type="checkbox"] {
+            accent-color: var(--oro);
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Botones */
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--borde-radio);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transicion);
+            border: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-oro {
+            background-color: var(--oro);
+            color: #000;
+        }
+
+        .btn-oro:hover {
+            background-color: var(--oro-brillo);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        .btn-accion {
+            padding: 5px 10px;
+            font-size: 0.85rem;
+            background-color: var(--bg-entrada);
+            color: var(--texto-claro);
+            border: 1px solid #3a3f52;
+        }
+
+        .btn-accion:hover {
+            border-color: var(--oro);
+            color: var(--oro);
+        }
+
+        .btn-peligro {
+            background-color: #441515;
+            color: #ff8888;
+            border: 1px solid #661d1d;
+        }
+
+        .btn-peligro:hover {
+            background-color: var(--estado-penalizado);
+        }
+
+        .btn-azul {
+            background-color: #1a365d;
+            color: #93c5fd;
+            border: 1px solid #2563eb;
+        }
+
+        .btn-azul:hover {
+            background-color: #2563eb;
+            color: #fff;
+        }
+
+        /* ==========================================================================
+           3. SISTEMA DE PESTAÑAS (Tabs Dinámicas)
+           ========================================================================== */
+        .contenedor-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #2a2e3d;
+            padding-bottom: 10px;
+            overflow-x: auto;
+        }
+
+        .tab-boton {
+            background-color: var(--bg-tarjeta);
+            color: var(--texto-mutado);
+            border: 1px solid #2a2e3d;
+            padding: 10px 20px;
+            border-radius: var(--borde-radio);
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: var(--transicion);
+        }
+
+        .tab-boton:hover {
+            color: var(--texto-claro);
+            border-color: var(--oro);
+        }
+
+        .tab-boton.activa {
+            background-color: var(--oro);
+            color: #000;
+            border-color: var(--oro);
+        }
+
+        /* ==========================================================================
+           4. TABLAS RESPONSIVAS Y SUGERENCIAS DE BÚSQUEDA
+           ========================================================================== */
+        .tabla-contenedor {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 15px;
+            border-radius: var(--borde-radio);
+            border: 1px solid #2a2e3d;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        th {
+            background-color: #1a1d29;
+            color: var(--oro);
+            padding: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #2a2e3d;
+        }
+
+        td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #2a2e3d;
+            vertical-align: middle;
+        }
+
+        tr.estado-normal { background-color: transparent; }
+        tr.estado-campeon { background-color: rgba(27, 77, 62, 0.35); color: #e6f7ff; }
+        tr.estado-penalizado { background-color: rgba(102, 29, 29, 0.35); color: #fff1f0; }
+        tr.estado-ambos { background-color: rgba(89, 74, 19, 0.4); color: #fffbe6; }
+
+        td.celda-normal { background-color: transparent; }
+        td.celda-campeon { color: var(--texto-campeon); font-weight: bold; background-color: rgba(27,77,62,0.15); }
+        td.celda-penalizado { color: var(--texto-penalizado); background-color: rgba(102,29,29,0.15); }
+        td.celda-ambos { color: var(--texto-ambos); font-weight: bold; background-color: rgba(89,74,19,0.15); }
+
+        .acciones-celda {
+            display: flex;
+            gap: 8px;
+        }
+
+        .lista-sugerencias {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background-color: var(--bg-tarjeta);
+            border: 1px solid var(--oro);
+            border-top: none;
+            border-radius: 0 0 var(--borde-radio) var(--borde-radio);
+            z-index: 10;
+            max-height: 150px;
+            overflow-y: auto;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            display: none;
+        }
+
+        .sugerencia-item {
+            padding: 10px;
+            cursor: pointer;
+            transition: var(--transicion);
+        }
+
+        .sugerencia-item:hover {
+            background-color: var(--bg-entrada);
+            color: var(--oro);
+        }
+
+        .widget-estadistica {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .mini-card {
+            background-color: var(--bg-tarjeta);
+            border: 1px solid #2a2e3d;
+            border-radius: var(--borde-radio);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .mini-card h3 {
+            font-size: 2rem;
+            color: var(--oro);
+            margin-bottom: 5px;
+        }
+
+        .mini-card p {
+            color: var(--texto-mutado);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        body.modo-espectador #sec-configuracion,
+        body.modo-espectador .panel-principal,
+        body.modo-espectador #barra-pestañas,
+        body.modo-espectador #sec-maestro-duelistas {
+            display: none !important;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+
+<div class="contenedor">
+    <header>
+        <h1>Master Liga DK</h1>
+        <p id="subtitulo-header">Sistema de Control, Puntuación Automatizada y Clasificación Semanal</p>
+    </header>
+
+    <section id="sec-configuracion" class="tarjeta">
+        <div class="tarjeta-titulo">
+            <span>Configuración de Liga Semanal</span>
+            <div class="zona-botones-header">
+                <button class="btn btn-azul" id="btn-abrir-maestro" style="font-size: 0.8rem; padding: 6px 12px;">Datos Duelistas</button>
+                <button class="btn btn-peligro" id="btn-reiniciar-liga" style="font-size: 0.8rem; padding: 6px 12px;">Nueva Semana</button>
+            </div>
+        </div>
+        <p style="margin-bottom: 15px; color: var(--texto-mutado);">Selecciona los días activos para las jornadas de la presente semana:</p>
+        <div class="grid-config">
+            <label class="opcion-check"><input type="checkbox" value="Lunes" class="chk-dia"> Lunes</label>
+            <label class="opcion-check"><input type="checkbox" value="Martes" class="chk-dia"> Martes</label>
+            <label class="opcion-check"><input type="checkbox" value="Miércoles" class="chk-dia"> Miércoles</label>
+            <label class="opcion-check"><input type="checkbox" value="Jueves" class="chk-dia"> Jueves</label>
+            <label class="opcion-check"><input type="checkbox" value="Viernes" class="chk-dia"> Viernes</label>
+            <label class="opcion-check"><input type="checkbox" value="Sábado" class="chk-dia"> Sábado</label>
+            <label class="opcion-check"><input type="checkbox" value="Domingo" class="chk-dia"> Domingo</label>
+        </div>
+        <button class="btn btn-oro" id="btn-inicializar">Establecer Estructura Semanal</button>
+    </section>
+
+    <section id="sec-maestro-duelistas" class="tarjeta" style="display: none;">
+        <div class="tarjeta-titulo">
+            <span>Base de Datos General de Duelistas</span>
+            <div class="zona-botones-header">
+                <button class="btn btn-peligro" id="btn-eliminar-todo-maestro" style="font-size: 0.8rem; padding: 6px 12px;">Eliminar Todos</button>
+                <button class="btn btn-accion" id="btn-cerrar-maestro" style="font-size: 0.8rem; padding: 6px 12px;">Cerrar Panel</button>
+            </div>
+        </div>
+        <div class="tabla-contenedor" style="max-height: 300px; overflow-y: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre Registrado</th>
+                        <th>Acciones de Edición de Base de Datos</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpo-tabla-maestro"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <div id="zona-operativa" style="display: none;">
+        <div class="contenedor-tabs" id="barra-pestañas"></div>
+
+        <div class="panel-principal">
+            <div>
+                <section class="tarjeta">
+                    <div class="tarjeta-titulo"><span id="titulo-formulario-jornada">Registrar Entrada Diaria</span></div>
+                    <form id="form-registro-duelista" onsubmit="event.preventDefault();">
+                        <input type="hidden" id="edit-index">
+                        <div class="grid-formulario">
+                            <div class="grupo-control">
+                                <label for="txt-nombre-duelista">Nombre Completo (Nombre Apellido)</label>
+                                <input type="text" id="txt-nombre-duelista" placeholder="Ej: Seto Kaiba" autocomplete="off">
+                                <div class="lista-sugerencias" id="sugerencias-autocompletado"></div>
+                            </div>
+                            <div class="grupo-control">
+                                <label for="num-match-ganados">Match Ganados</label>
+                                <input type="number" id="num-match-ganados" min="0" value="0">
+                            </div>
+                            <div class="grupo-control">
+                                <label class="opcion-check"><input type="checkbox" id="chk-campeon"> ¿Campeón?</label>
+                            </div>
+                            <div class="grupo-control">
+                                <label class="opcion-check"><input type="checkbox" id="chk-penalizacion"> ¿Penalizado?</label>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-oro" id="btn-guardar-registro" style="width: 100%;">Guardar</button>
+                            </div>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="tarjeta">
+                    <div class="tarjeta-titulo"><span id="titulo-tabla-jornada">Resultados de la Jornada</span></div>
+                    <div class="grupo-control" style="margin-bottom: 15px;">
+                        <input type="text" id="txt-busqueda-tabla" placeholder="Filtrar competidores en esta jornada...">
+                    </div>
+                    <div class="tabla-contenedor">
+                        <table id="tabla-jornada-diaria">
+                            <thead>
+                                <tr>
+                                    <th>Duelista</th>
+                                    <th>Match Ganados</th>
+                                    <th>Puntos Obtenidos</th>
+                                    <th>Condición/Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cuerpo-tabla-jornada"></tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <div>
+                <section class="tarjeta">
+                    <div class="tarjeta-titulo"><span>Métricas de Control</span></div>
+                    <div class="widget-estadistica" style="grid-template-columns: 1fr;">
+                        <div class="mini-card">
+                            <h3 id="stat-total-duelistas">0</h3>
+                            <p>Duelistas en Base de Datos</p>
+                        </div>
+                        <div class="mini-card">
+                            <h3 id="stat-total-jornadas">0</h3>
+                            <p>Jornadas Con Registros</p>
+                        </div>
+                    </div>
+                </section>
+                
+                <section class="tarjeta">
+                    <div class="tarjeta-titulo"><span>Líderes Históricos</span></div>
+                    <div class="tabla-contenedor">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Duelista</th>
+                                    <th>👑</th>
+                                    <th>⚔️ MG</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cuerpo-tabla-stats"></tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <section class="tarjeta" id="sec-ranking-final">
+            <div class="tarjeta-titulo">
+                <span>Clasificación y Ranking General Semanal</span>
+                <button class="btn btn-oro" id="btn-generar-pdf" style="font-size: 0.8rem; padding: 6px 12px;">Generar PDF</button>
+            </div>
+            <div class="tabla-contenedor">
+                <table id="tabla-ranking-final">
+                    <thead id="cabecera-ranking-final"></thead>
+                    <tbody id="cuerpo-ranking-final"></tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB-RI1eeec07s8Fsx_T2cwj8l1GGsVWyFM",
+      authDomain: "indurama-e1644.firebaseapp.com",
+      projectId: "indurama-e1644",
+      storageBucket: "indurama-e1644.firebasestorage.app",
+      messagingSenderId: "584600212292",
+      appId: "1:584600212292:web:28f76db083af466fde7d11",
+      measurementId: "G-8K8VR2BJ23"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const dbNodeRef = ref(db, "master_liga_dk_data");
+
+    // --- ESTADO CENTRAL SEGURO ---
+    let appEstado = {
+        configuracion: { diasSeleccionados: [] },
+        jornadas: {},
+        maestroDuelistas: []
+    };
+
+    // INTENTO DE RECUPERACIÓN LOCAL PREVENTIVA ANTES DE FIREBASE
+    const respaldoLocal = localStorage.getItem('MASTER_LIGA_DK_DATA');
+    if (respaldoLocal) {
+        try {
+            appEstado = JSON.parse(respaldoLocal);
+        } catch(e) { console.error("Error parseando almacenamiento local preventivo:", e); }
+    }
+
+    let diaActivoActual = appEstado.configuracion?.diasSeleccionados?.[0] || "";
+    let esModoEspectador = false;
+
+    // --- ENLACES AL DOM ---
+    const chkDias = document.querySelectorAll('.chk-dia');
+    const btnInicializar = document.getElementById('btn-inicializar');
+    const btnReiniciarLiga = document.getElementById('btn-reiniciar-liga');
+    const zonaOperativa = document.getElementById('zona-operativa');
+    const barraPestañas = document.getElementById('barra-pestañas');
+    
+    const formRegistro = document.getElementById('form-registro-duelista');
+    const txtNombre = document.getElementById('txt-nombre-duelista');
+    const numMatch = document.getElementById('num-match-ganados');
+    const chkCampeon = document.getElementById('chk-campeon');
+    const chkPenalizacion = document.getElementById('chk-penalizacion');
+    const btnGuardarRegistro = document.getElementById('btn-guardar-registro');
+    const editIndexField = document.getElementById('edit-index');
+    
+    const cuerpoTablaJornada = document.getElementById('cuerpo-tabla-jornada');
+    const txtBusquedaTabla = document.getElementById('txt-busqueda-tabla');
+    const sugerenciasBox = document.getElementById('sugerencias-autocompletado');
+    
+    const cabeceraRanking = document.getElementById('cabecera-ranking-final');
+    const cuerpoRanking = document.getElementById('cuerpo-ranking-final');
+    
+    const statTotalDuelistas = document.getElementById('stat-total-duelistas');
+    const statTotalJornadas = document.getElementById('stat-total-jornadas');
+    const cuerpoTablaStats = document.getElementById('cuerpo-tabla-stats');
+    const btnGenerarPDF = document.getElementById('btn-generar-pdf');
+
+    const secMaestroDuelistas = document.getElementById('sec-maestro-duelistas');
+    const btnAbrirMaestro = document.getElementById('btn-abrir-maestro');
+    const btnCerrarMaestro = document.getElementById('btn-cerrar-maestro');
+    const btnEliminarTodoMaestro = document.getElementById('btn-eliminar-todo-maestro');
+    const cuerpoTablaMaestro = document.getElementById('cuerpo-tabla-maestro');
+
+    function detectarModoEspectador() {
+        const parametrosURL = new URLSearchParams(window.location.search);
+        if (parametrosURL.get('view') === 'spectator') {
+            esModoEspectador = true;
+            document.body.classList.add('modo-espectador');
+            document.getElementById('subtitulo-header').textContent = "Pizarra Exclusiva de Resultados y Posiciones Semanales";
+        }
+    }
+
+    function despacharPersistencia() {
+        if (esModoEspectador) return; 
+        localStorage.setItem('MASTER_LIGA_DK_DATA', JSON.stringify(appEstado));
+        set(dbNodeRef, appEstado).catch(err => console.error("Error de sincronización Firebase: ", err));
+    }
+
+    // --- CORRECCIÓN CRÍTICA DE ONVALUE (SIN BORRADO AUTOMÁTICO EN RECARGA) ---
+    onValue(dbNodeRef, (snapshot) => {
+        const datosServidor = snapshot.val();
+        if (datosServidor) {
+            appEstado = datosServidor;
+            if (!appEstado.maestroDuelistas) appEstado.maestroDuelistas = [];
+            if (!appEstado.jornadas) appEstado.jornadas = {};
+            if (!appArchiveValidaConfig()) appEstado.configuracion = { diasSeleccionados: [] };
+            
+            if (appEstado.configuracion.diasSeleccionados.length > 0 && !diaActivoActual) {
+                diaActivoActual = appEstado.configuracion.diasSeleccionados[0];
+            }
+            
+            if (!esModoEspectador) {
+                chkDias.forEach(c => {
+                    c.checked = appEstado.configuracion.diasSeleccionados.includes(c.value);
+                });
+            }
+            localStorage.setItem('MASTER_LIGA_DK_DATA', JSON.stringify(appEstado));
+            renderizarAplicacionCompleta();
+        } else {
+            // Si el nodo de la BD está completamente limpio en el servidor, guardamos lo que tenemos localmente
+            if (!esModoEspectador && appEstado.maestroDuelistas.length > 0) {
+                despacharPersistencia();
+            }
+            renderizarAplicacionCompleta();
+        }
+    });
+
+    function appArchiveValidaConfig() {
+        return appEstado.configuracion && appEstado.configuracion.diasSeleccionados;
+    }
+
+    detectarModoEspectador();
+    configurarEventosBusqueda();
+    renderizarAplicacionCompleta(); // Render inicial con caché de localstorage mientras responde Firebase
+
+    btnInicializar.addEventListener('click', () => {
+        const seleccionados = Array.from(chkDias).filter(c => c.checked).map(c => c.value);
+        if (seleccionados.length === 0) {
+            alert("Atención: Debes seleccionar al menos un día para estructurar la liga de esta semana.");
+            return;
+        }
+        
+        appEstado.configuracion.diasSeleccionados = seleccionados;
+        seleccionados.forEach(dia => {
+            if (!appEstado.jornadas[dia]) appEstado.jornadas[dia] = [];
+        });
+        
+        Object.keys(appEstado.jornadas).forEach(dia => {
+            if (!seleccionados.includes(dia)) delete appEstado.jornadas[dia];
+        });
+
+        diaActivoActual = seleccionados[0];
+        despacharPersistencia();
+        renderizarAplicacionCompleta();
+    });
+
+    btnReiniciarLiga.addEventListener('click', () => {
+        if (confirm("¿Estás seguro de iniciar una nueva liga semanal? Esto restablecerá los calendarios y las tablas semanales, manteniendo la lista de competidores históricos.")) {
+            appEstado.configuracion.diasSeleccionados = [];
+            appEstado.jornadas = {};
+            diaActivoActual = "";
+            chkDias.forEach(c => c.checked = false);
+            despacharPersistencia();
+            renderizarAplicacionCompleta();
+        }
+    });
+
+    btnAbrirMaestro.addEventListener('click', () => {
+        renderizarTablaMaestro();
+        secMaestroDuelistas.style.display = "block";
+        secMaestroDuelistas.scrollIntoView({ behavior: 'smooth' });
+    });
+    btnCerrarMaestro.addEventListener('click', () => secMaestroDuelistas.style.display = "none");
+    btnEliminarTodoMaestro.addEventListener('click', eliminarTodosLosDuelistasMaestro);
+
+    btnGuardarRegistro.addEventListener('click', procesarFormularioDuelista);
+    txtBusquedaTabla.addEventListener('input', () => renderizarTablaJornada(diaActivoActual));
+    btnGenerarPDF.addEventListener('click', exportarClasificacionPDF);
+
+    function exportarClasificacionPDF() {
+        const tablaOriginal = document.getElementById('tabla-ranking-final');
+        const plantillaClonada = tablaOriginal.cloneNode(true);
+
+        const canvasContenedor = document.createElement('div');
+        canvasContenedor.style.padding = '20px';
+        canvasContenedor.style.backgroundColor = '#161820';
+        canvasContenedor.style.color = '#f5f6fa';
+        canvasContenedor.style.fontFamily = 'Segoe UI, sans-serif';
+        
+        const bannerEncabezado = document.createElement('h2');
+        bannerEncabezado.textContent = "MASTER LIGA DK - TABLA GENERAL DE POSICIONES";
+        bannerEncabezado.style.color = '#d4af37';
+        bannerEncabezado.style.textAlign = 'center';
+        bannerEncabezado.style.marginBottom = '25px';
+        bannerEncabezado.style.textTransform = 'uppercase';
+        
+        plantillaClonada.style.width = "100%";
+        plantillaClonada.style.borderCollapse = "collapse";
+        plantillaClonada.style.color = "#f5f6fa";
+        
+        plantillaClonada.querySelectorAll('th').forEach(th => {
+            th.style.backgroundColor = '#1a1d29';
+            th.style.color = '#d4af37';
+            th.style.padding = '12px';
+            th.style.border = '1px solid #2a2e3d';
+        });
+
+        plantillaClonada.querySelectorAll('td').forEach(td => {
+            td.style.padding = '10px';
+            td.style.border = '1px solid #2a2e3d';
+            if(!td.style.color) td.style.color = '#f5f6fa';
+        });
+
+        canvasContenedor.appendChild(bannerEncabezado);
+        canvasContenedor.appendChild(plantillaClonada);
+
+        const configuracionesImpresion = {
+            margin:       10,
+            filename:     'Clasificacion_Semanal_Master_Liga_DK.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, backgroundColor: '#161820', useCORS: true },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
+        };
+
+        html2pdf().set(configuracionesImpresion).from(canvasContenedor).save();
+    }
+
+    function renderizarAplicacionCompleta() {
+        const diasActivos = appEstado.configuracion?.diasSeleccionados;
+        if (!diasActivos || diasActivos.length === 0) {
+            zonaOperativa.style.display = "none";
+            return;
+        }
+
+        zonaOperativa.style.display = "block";
+        if (!esModoEspectador) {
+            renderizarBarraPestañas();
+            renderizarTablaJornada(diaActivoActual);
+            if(secMaestroDuelistas.style.display === "block") renderizarTablaMaestro();
+        }
+        renderizarEstadisticasYClasificaciones();
+    }
+
+    function renderizarBarraPestañas() {
+        barraPestañas.innerHTML = "";
+        if(!appEstado.configuracion?.diasSeleccionados) return;
+        appEstado.configuracion.diasSeleccionados.forEach(dia => {
+            const btn = document.createElement('button');
+            btn.className = `tab-boton ${dia === diaActivoActual ? 'activa' : ''}`;
+            const numParticipantes = appEstado.jornadas[dia] ? appEstado.jornadas[dia].length : 0;
+            btn.textContent = `${dia} (${numParticipantes})`;
+            btn.addEventListener('click', () => {
+                diaActivoActual = dia;
+                cambiarPestañaActiva();
+            });
+            barraPestañas.appendChild(btn);
+        });
+    }
+
+    function cambiarPestañaActiva() {
+        resetearFormulario();
+        renderizarTablaJornada(diaActivoActual);
+        renderizarBarraPestañas();
+    }
+
+    function mapearClaseEstilo(campeon, penalizacion) {
+        if (campeon && penalizacion) return 'estado-ambos';
+        if (campeon) return 'estado-campeon';
+        if (penalizacion) return 'estado-penalizado';
+        return 'estado-normal';
+    }
+
+    function mapearClaseCelda(campeon, penalizacion) {
+        if (campeon && penalizacion) return 'celda-ambos';
+        if (campeon) return 'celda-campeon';
+        if (penalizacion) return 'celda-penalizado';
+        return 'celda-normal';
+    }
+
+    function renderizarTablaJornada(dia) {
+        if (esModoEspectador || !dia) return;
+        cuerpoTablaJornada.innerHTML = "";
+        document.getElementById('titulo-tabla-jornada').textContent = `Resultados de la Jornada: ${dia}`;
+        document.getElementById('titulo-formulario-jornada').textContent = `Registrar Entrada Diaria - ${dia}`;
+        
+        const registros = appEstado.jornadas[dia] || [];
+        const filtro = txtBusquedaTabla.value.toLowerCase().trim();
+
+        registros.forEach((reg, index) => {
+            if (filtro && !reg.nombre.toLowerCase().includes(filtro)) return;
+
+            const fila = document.createElement('tr');
+            fila.className = mapearClaseEstilo(reg.campeon, reg.penalizacion);
+
+            let tagEstado = "Normal";
+            if (reg.campeon && reg.penalizacion) tagEstado = "🏆 Campeón / ⚠️ Penalizado";
+            else if (reg.campeon) tagEstado = "🏆 Campeón";
+            else if (reg.penalizacion) tagEstado = "⚠️ Penalizado";
+
+            fila.innerHTML = `
+                <td style="font-weight: 600;">${reg.nombre}</td>
+                <td>${reg.matchGanados}</td>
+                <td style="font-weight: bold; color: var(--oro);">${reg.puntos} pts</td>
+                <td><small>${tagEstado}</small></td>
+                <td class="acciones-celda">
+                    <button class="btn btn-accion" id="btn-edit-${index}">Editar</button>
+                    <button class="btn btn-accion btn-peligro" id="btn-del-${index}">Eliminar</button>
+                </td>
+            `;
+            cuerpoTablaJornada.appendChild(fila);
+
+            document.getElementById(`btn-edit-${index}`).addEventListener('click', () => cargarRegistroParaEditar(index));
+            document.getElementById(`btn-del-${index}`).addEventListener('click', () => eliminarRegistroDuelista(index));
+        });
+
+        if (cuerpoTablaJornada.innerHTML === "") {
+            cuerpoTablaJornada.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--texto-mutado);">No hay registros para esta jornada o no coinciden con la búsqueda.</td></tr>`;
+        }
+    }
+
+    function renderizarTablaMaestro() {
+        cuerpoTablaMaestro.innerHTML = "";
+        if (!appEstado.maestroDuelistas || appEstado.maestroDuelistas.length === 0) {
+            cuerpoTablaMaestro.innerHTML = `<tr><td colspan="2" style="text-align: center; color: var(--texto-mutado);">Base de datos vacía. Registra jugadores en el panel principal.</td></tr>`;
+            return;
+        }
+
+        [...appEstado.maestroDuelistas].sort().forEach((duelista, index) => {
+            const fila = document.createElement('tr');
+            fila.innerHTML = `
+                <td><strong>${duelista}</strong></td>
+                <td class="acciones-celda">
+                    <button class="btn btn-accion" id="btn-edit-maestro-${index}">Modificar Nombre</button>
+                    <button class="btn btn-accion btn-peligro" id="btn-del-maestro-${index}">Eliminar de BD</button>
+                </td>
+            `;
+            cuerpoTablaMaestro.appendChild(fila);
+
+            document.getElementById(`btn-edit-maestro-${index}`).addEventListener('click', () => modificarNombreDuelistaMaestro(duelista));
+            document.getElementById(`btn-del-maestro-${index}`).addEventListener('click', () => eliminarDuelistaMaestro(duelista));
+        });
+    }
+
+    function renderizarEstadisticasYClasificaciones() {
+        const resumenSemanal = {};
+        const diasSeleccionados = appEstado.configuracion?.diasSeleccionados || [];
+        
+        diasSeleccionados.forEach(dia => {
+            const listado = appEstado.jornadas[dia] || [];
+            listado.forEach(p => {
+                if (!resumenSemanal[p.nombre]) {
+                    resumenSemanal[p.nombre] = { total: 0, detallesDias: {} };
+                    diasSeleccionados.forEach(d => {
+                        resumenSemanal[p.nombre].detallesDias[d] = { puntos: null, campeon: false, penalizacion: false };
+                    });
+                }
+                resumenSemanal[p.nombre].detallesDias[dia] = {
+                    puntos: p.puntos, campeon: p.campeon, penalizacion: p.penalizacion
+                };
+                resumenSemanal[p.nombre].total += p.puntos;
+            });
+        });
+
+        const estadisticasGlobales = {};
+        let contadorJornadasConDatos = 0;
+
+        diasSeleccionados.forEach(dia => {
+            if (appEstado.jornadas[dia] && appEstado.jornadas[dia].length > 0) contadorJornadasConDatos++;
+            const registros = appEstado.jornadas[dia] || [];
+            registros.forEach(p => {
+                if (!estadisticasGlobales[p.nombre]) estadisticasGlobales[p.nombre] = { campeonatos: 0, matchGanados: 0 };
+                if (p.campeon) estadisticasGlobales[p.nombre].campeonatos += 1;
+                estadisticasGlobales[p.nombre].matchGanados += parseInt(p.matchGanados || 0);
+            });
+        });
+
+        if (!esModoEspectador) {
+            statTotalDuelistas.textContent = appEstado.maestroDuelistas ? appEstado.maestroDuelistas.length : 0;
+            statTotalJornadas.textContent = contadorJornadasConDatos;
+
+            cuerpoTablaStats.innerHTML = "";
+            const listaLideresOrdenados = Object.keys(estadisticasGlobales).map(nom => ({
+                nombre: nom, ...estadisticasGlobales[nom]
+            })).sort((a,b) => b.campeonatos - a.campeonatos || b.matchGanados - a.matchGanados);
+
+            listaLideresOrdenados.slice(0, 7).forEach(ld => {
+                const f = document.createElement('tr');
+                f.innerHTML = `<td><small>${ld.nombre}</small></td><td style="color: var(--oro); font-weight: bold;">${ld.campeonatos}</td><td>${ld.matchGanados}</td>`;
+                cuerpoTablaStats.appendChild(f);
+            });
+            if(cuerpoTablaStats.innerHTML === "") {
+                cuerpoTablaStats.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--texto-mutado); font-size: 0.8rem;">Sin datos</td></tr>`;
+            }
+        }
+
+        cabeceraRanking.innerHTML = "";
+        const filaCabecera = document.createElement('tr');
+        filaCabecera.innerHTML = `<th>Lugar</th><th>Nombre</th>`;
+        diasSeleccionados.forEach(dia => { filaCabecera.innerHTML += `<th>${dia}</th>`; });
+        filaCabecera.innerHTML += `<th>Total Acumulado</th>`;
+        cabeceraRanking.appendChild(filaCabecera);
+
+        cuerpoRanking.innerHTML = "";
+        const competidoresOrdenados = Object.keys(resumenSemanal).map(key => ({
+            nombre: key, ...resumenSemanal[key]
+        })).sort((a, b) => b.total - a.total);
+
+        competidoresOrdenados.forEach((comp, index) => {
+            const filaR = document.createElement('tr');
+            let medalla = `${index + 1}°`;
+            if (index === 0) medalla = "🥇 Campeón";
+            if (index === 1) medalla = "🥈 2do Lugar";
+            if (index === 2) medalla = "🥉 3er Lugar";
+
+            let celdasDiasHtml = "";
+            diasSeleccionados.forEach(dia => {
+                const infoDia = comp.detallesDias[dia];
+                if (infoDia && infoDia.puntos !== null) {
+                    const cssCelda = mapearClaseCelda(infoDia.campeon, infoDia.penalizacion);
+                    celdasDiasHtml += `<td class="${cssCelda}">${infoDia.puntos} pts</td>`;
+                } else {
+                    celdasDiasHtml += `<td style="color: var(--texto-mutado); text-align: center;">-</td>`;
+                }
+            });
+
+            filaR.innerHTML = `
+                <td style="font-weight: bold; color: var(--oro);">${medalla}</td>
+                <td style="font-weight: bold;">${comp.nombre}</td>
+                ${celdasDiasHtml}
+                <td style="font-weight: bold; font-size: 1.1rem; color: #fff;">${comp.total} pts</td>
+            `;
+            cuerpoRanking.appendChild(filaR);
+        });
+
+        if (competidoresOrdenados.length === 0) {
+            const totalColumnas = diasSeleccionados.length + 3;
+            cuerpoRanking.innerHTML = `<tr><td colspan="${totalColumnas}" style="text-align: center; color: var(--texto-mutado);">Esperando registros diarios para computar posiciones de liga.</td></tr>`;
+        }
+    }
+
+    function procesarFormularioDuelista() {
+        let nombreRaw = txtNombre.value.trim();
+        const matchG = parseInt(numMatch.value) || 0;
+        const esCamp = chkCampeon.checked;
+        const esPenal = chkPenalizacion.checked;
+        const indexEdicion = editIndexField.value;
+
+        if (!nombreRaw) {
+            alert("Error: El campo de nombre no puede estar vacío.");
+            return;
+        }
+
+        nombreRaw = nombreRaw.split(/\s+/).map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join(" ");
+        if (nombreRaw.split(" ").length < 2) {
+            alert("Estructura inválida: Introduce obligatoriamente Nombre y Apellido.");
+            return;
+        }
+
+        if (!appEstado.jornadas[diaActivoActual]) appEstado.jornadas[diaActivoActual] = [];
+        const diaRegistros = appEstado.jornadas[diaActivoActual];
+
+        if (esCamp && diaRegistros.some((r, idx) => r.campeon && idx.toString() !== indexEdicion)) {
+            alert(`Conflicto: Ya existe un Campeón en la jornada del día ${diaActivoActual}.`);
+            return;
+        }
+
+        if (diaRegistros.some((r, idx) => r.nombre.toLowerCase() === nombreRaw.toLowerCase() && idx.toString() !== indexEdicion)) {
+            alert(`Error: El duelista "${nombreRaw}" ya se encuentra ingresado hoy.`);
+            return;
+        }
+
+        let puntosTotalesCalculados = (esPenal ? 1 : 3) + matchG + (esCamp ? 1 : 0);
+        const objetoRegistro = { nombre: nombreRaw, matchGanados: matchG, campeon: esCamp, penalizacion: esPenal, puntos: puntosTotalesCalculados };
+
+        if (indexEdicion !== "") {
+            appEstado.jornadas[diaActivoActual][parseInt(indexEdicion)] = objetoRegistro;
+        } else {
+            appEstado.jornadas[diaActivoActual].push(objetoRegistro);
+        }
+
+        if (!appEstado.maestroDuelistas) appEstado.maestroDuelistas = [];
+        if (!appEstado.maestroDuelistas.includes(nombreRaw)) appEstado.maestroDuelistas.push(nombreRaw);
+
+        despacharPersistencia();
+        resetearFormulario();
+        renderizarAplicacionCompleta();
+    }
+
+    function cargarRegistroParaEditar(index) {
+        const reg = appEstado.jornadas[diaActivoActual][index];
+        if (reg) {
+            txtNombre.value = reg.nombre;
+            numMatch.value = reg.matchGanados;
+            chkCampeon.checked = reg.campeon;
+            chkPenalizacion.checked = reg.penalizacion;
+            editIndexField.value = index;
+            document.getElementById('btn-guardar-registro').textContent = "Actualizar Registro";
+            txtNombre.focus();
+        }
+    }
+
+    function eliminarRegistroDuelista(index) {
+        if (confirm("¿Estás seguro de que deseas eliminar este registro de la jornada?")) {
+            appEstado.jornadas[diaActivoActual].splice(index, 1);
+            despacharPersistencia();
+            renderizarAplicacionCompleta();
+        }
+    }
+
+    function modificarNombreDuelistaMaestro(viejoNombre) {
+        let nuevoNombre = prompt(`Modificar el nombre de "${viejoNombre}":`, viejoNombre);
+        if (nuevoNombre === null) return; 
+
+        nuevoNombre = nuevoNombre.trim().split(/\s+/).map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join(" ");
+        if (!nuevoNombre || nuevoNombre.split(" ").length < 2) {
+            alert("Error: Nombre y apellido inválidos.");
+            return;
+        }
+
+        if (confirm(`¿Confirmas cambiar el nombre de "${viejoNombre}" a "${nuevoNombre}" en todas partes?`)) {
+            const idxM = appEstado.maestroDuelistas.indexOf(viejoNombre);
+            if(idxM !== -1) appEstado.maestroDuelistas[idxM] = nuevoNombre;
+            
+            Object.keys(appEstado.jornadas).forEach(dia => {
+                appEstado.jornadas[dia].forEach(reg => {
+                    if (reg.nombre === viejoNombre) reg.nombre = nuevoNombre;
+                });
+            });
+
+            despacharPersistencia();
+            renderizarAplicacionCompleta();
+        }
+    }
+
+    function eliminarDuelistaMaestro(nombreDuelista) {
+        if (confirm(`¿Estás seguro de eliminar a "${nombreDuelista}" de la BD?\nEsto borrará su participación semanal.`)) {
+            appEstado.maestroDuelistas = appEstado.maestroDuelistas.filter(nom => nom !== nombreDuelista);
+            Object.keys(appEstado.jornadas).forEach(dia => {
+                appEstado.jornadas[dia] = appEstado.jornadas[dia].filter(reg => reg.nombre !== nombreDuelista);
+            });
+
+            despacharPersistencia();
+            renderizarAplicacionCompleta();
+        }
+    }
+
+    function eliminarTodosLosDuelistasMaestro() {
+        if (confirm("¿Estás seguro de que deseas ELIMINAR A TODOS los duelistas de la base de datos históricos?")) {
+            if (confirm("¿Confirmas por segunda vez la limpieza total?")) {
+                appEstado.maestroDuelistas = [];
+                Object.keys(appEstado.jornadas).forEach(dia => { appEstado.jornadas[dia] = []; });
+                despacharPersistencia();
+                secMaestroDuelistas.style.display = "none";
+                renderizarAplicacionCompleta();
+            }
+        }
+    }
+
+    function resetearFormulario() {
+        formRegistro.reset();
+        editIndexField.value = "";
+        document.getElementById('btn-guardar-registro').textContent = "Guardar";
+        sugerenciasBox.style.display = "none";
+    }
+
+    function configurarEventosBusqueda() {
+        txtNombre.addEventListener('input', () => {
+            if (esModoEspectador) return;
+            const inputVal = txtNombre.value.toLowerCase().trim();
+            sugerenciasBox.innerHTML = "";
+            if (!inputVal) { sugerenciasBox.style.display = "none"; return; }
+
+            const filtrados = (appEstado.maestroDuelistas || []).filter(nom => nom.toLowerCase().includes(inputVal));
+            if (filtrados.length > 0) {
+                filtrados.forEach(match => {
+                    const d = document.createElement('div');
+                    d.className = "sugerencia-item";
+                    d.textContent = match;
+                    d.addEventListener('click', () => {
+                        txtNombre.value = match;
+                        sugerenciasBox.style.display = "none";
+                        numMatch.focus();
+                    });
+                    sugerenciasBox.appendChild(d);
+                });
+                sugerenciasBox.style.display = "block";
+            } else { sugerenciasBox.style.display = "none"; }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (e.target !== txtNombre && e.target !== sugerenciasBox) sugerenciasBox.style.display = "none";
+        });
+    }
+</script>
+</body>
+</html>

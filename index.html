@@ -103,6 +103,7 @@
             margin-bottom: 20px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             width: 100%;
+            min-width: 0;
         }
 
         /* Estilo Destacado Visual para Tarjetas de Ingreso de Datos */
@@ -176,6 +177,12 @@
             grid-template-columns: 1fr;
             gap: 20px;
             width: 100%;
+            min-width: 0;
+        }
+
+        .panel-principal > div {
+            width: 100%;
+            min-width: 0;
         }
 
         /* ==========================================================================
@@ -325,14 +332,22 @@
             color: #fff;
         }
 
-        .btn-purpura {
-            background-color: #4c1d95;
-            color: #ddd6fe;
-            border: 1px solid #7c3aed;
+        .btn-tab-fecha {
+            background: transparent;
+            border: none;
+            color: var(--oro);
+            padding: 8px;
+            cursor: pointer;
+            border-radius: calc(var(--borde-radio) - 2px);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transicion);
         }
-        .btn-purpura:hover:not(:disabled) {
-            background-color: #7c3aed;
-            color: #fff;
+
+        .btn-tab-fecha:hover {
+            background-color: rgba(214, 175, 55, 0.15);
         }
 
         /* ==========================================================================
@@ -388,22 +403,14 @@
             color: #000;
         }
 
-        .btn-tab-fecha {
-            background: transparent;
-            border: none;
-            color: var(--oro);
-            padding: 8px;
-            cursor: pointer;
-            border-radius: calc(var(--borde-radio) - 2px);
-            font-size: 0.95rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transicion);
+        .btn-purpura {
+            background-color: #4c1d95;
+            color: #ddd6fe;
+            border: 1px solid #7c3aed;
         }
-
-        .btn-tab-fecha:hover {
-            background-color: rgba(214, 175, 55, 0.15);
+        .btn-purpura:hover:not(:disabled) {
+            background-color: #7c3aed;
+            color: #fff;
         }
 
         /* ==========================================================================
@@ -1474,16 +1481,18 @@
     function procesarCamponMensual() {
         if (appEstado.anoFinalizado) return;
         const mesSeleccionado = selMesAnual.value;
-        const nombreCampeon = txtNombreCampeonMes.value.trim();
+        let nombreCampeon = txtNombreCampeonMes.value.trim();
 
         if (!nombreCampeon) {
             alert("Error: Debes definir un nombre para el campeón.");
             return;
         }
 
+        nombreCampeon = nombreCampeon.split(/\s+/).map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join(" ");
+
+        if (!appEstado.maestroDuelistas) appEstado.maestroDuelistas = [];
         if (!appEstado.maestroDuelistas.includes(nombreCampeon)) {
-            alert(`Error: El duelista "${nombreCampeon}" no existe en la Base de Datos General. Regístralo o búscalo con el autocompletado.`);
-            return;
+            appEstado.maestroDuelistas.push(nombreCampeon);
         }
 
         appEstado.campeonesMensuales[mesSeleccionado] = nombreCampeon;

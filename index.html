@@ -168,6 +168,7 @@
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             align-items: flex-end;
+            width: 100%;
         }
 
         .panel-principal {
@@ -324,50 +325,6 @@
             color: #fff;
         }
 
-        .btn-accion {
-            padding: 8px 14px;
-            font-size: 0.85rem;
-            background-color: var(--bg-entrada);
-            color: var(--texto-claro);
-            border: 1px solid #3a3f52;
-        }
-
-        .btn-accion:hover:not(:disabled) {
-            border-color: var(--oro);
-            color: var(--oro);
-        }
-
-        .btn-peligro {
-            background-color: #441515;
-            color: #ff8888;
-            border: 1px solid #661d1d;
-        }
-
-        .btn-peligro:hover:not(:disabled) {
-            background-color: #661d1d;
-        }
-
-        .btn-azul {
-            background-color: #1a365d;
-            color: #93c5fd;
-            border: 1px solid #2563eb;
-        }
-
-        .btn-azul:hover:not(:disabled) {
-            background-color: #2563eb;
-            color: #fff;
-        }
-
-        .btn-verde {
-            background-color: #14532d;
-            color: #4ade80;
-            border: 1px solid #16a34a;
-        }
-        .btn-verde:hover:not(:disabled) {
-            background-color: #16a34a;
-            color: #fff;
-        }
-
         .btn-purpura {
             background-color: #4c1d95;
             color: #ddd6fe;
@@ -464,6 +421,8 @@
 
         table {
             width: 100%;
+            min-width: 100%;
+            display: table;
             border-collapse: collapse;
             text-align: left;
             font-size: 0.95rem;
@@ -478,15 +437,14 @@
             font-size: 0.85rem;
             letter-spacing: 0.5px;
             border-bottom: 2px solid #2a2e3d;
-            white-space: normal; /* Permite ajuste vertical en cabeceras si es necesario */
+            white-space: nowrap; 
         }
 
         td {
             padding: 12px 14px;
             border-bottom: 1px solid #2a2e3d;
             vertical-align: middle;
-            white-space: normal; /* Modificado: Permite que el contenido salte de línea verticalmente en celulares */
-            word-break: break-word; /* Rompe palabras largas para evitar desbordamientos */
+            white-space: nowrap; /* Corrección definitiva: Evita saltos entre palabras del nombre */
         }
 
         /* Corrección estricta para evitar saltos entre palabras en la columna MES LIGA */
@@ -514,6 +472,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: brilloTextoGradiente 3s linear infinite, pulsoArcoiris 1.5s infinite alternate ease-in-out;
+            white-space: nowrap !important;
         }
 
         @keyframes pulsoArcoiris {
@@ -530,6 +489,7 @@
             font-weight: bold;
             text-transform: uppercase;
             animation: brilloDorado 1.5s infinite alternate ease-in-out;
+            white-space: nowrap !important;
         }
 
         @keyframes brilloDorado {
@@ -600,7 +560,7 @@
         .acciones-celda {
             display: flex;
             gap: 8px;
-            flex-wrap: wrap; /* Permite que los botones se apilen si no caben en móviles */
+            flex-wrap: nowrap; /* Evita que los botones rompan la estructura en celdas compactas */
         }
 
         .lista-sugerencias {
@@ -1359,7 +1319,7 @@
             else if (reg.penalizacion) tagEstado = "⚠️ Penalizado";
 
             fila.innerHTML = `
-                <td style="font-weight: 600;">${reg.nombre}</td>
+                <td style="font-weight: 600; white-space: nowrap !important;">${reg.nombre}</td>
                 <td>${reg.matchGanados}</td>
                 <td style="font-weight: bold; color: var(--oro);">${reg.puntos} pts</td>
                 <td><small>${tagEstado}</small></td>
@@ -1391,7 +1351,7 @@
         [...appEstado.maestroDuelistas].sort().forEach((duelista, index) => {
             const fila = document.createElement('tr');
             fila.innerHTML = `
-                <td><strong>${duelista}</strong></td>
+                <td style="white-space: nowrap !important;"><strong>${duelista}</strong></td>
                 <td class="acciones-celda">
                     <button class="btn btn-accion" id="btn-edit-maestro-${index}" ${appEstado.semanaFinalizada ? 'disabled' : ''}>MODIFICAR</button>
                     <button class="btn btn-accion btn-peligro" id="btn-del-maestro-${index}" ${appEstado.semanaFinalizada ? 'disabled' : ''}>ELIMINAR</button>
@@ -1428,8 +1388,7 @@
 
         cabeceraRanking.innerHTML = "";
         const filaCabecera = document.createElement('tr');
-        // MODIFICADO: Orden de columnas de cabecera y ancho del Nombre con white-space normal adaptativo
-        filaCabecera.innerHTML = `<th>POSICIÓN</th><th style="min-width: 160px; white-space: normal; word-break: normal;">Nombre</th><th>Total Acumulado</th>`;
+        filaCabecera.innerHTML = `<th>POSICIÓN</th><th style="min-width: 160px; white-space: nowrap !important;">Nombre</th><th>Total Acumulado</th>`;
         diasSeleccionados.forEach(dia => { 
             const fTag = appEstado.fechasJornadas && appEstado.fechasJornadas[dia] ? `<br><small style="color:var(--texto-mutado);">${appEstado.fechasJornadas[dia]}</small>` : "";
             filaCabecera.innerHTML += `<th>${dia}${fTag}</th>`; 
@@ -1479,7 +1438,6 @@
                 }
             });
 
-            // Lógica de inyección de efectos dinámicos solicitados para el Podio Semanal
             let claseEfectoNombre = "";
             let claseEfectoPuntaje = "";
 
@@ -1493,10 +1451,9 @@
                 claseEfectoPuntaje = ' style="font-weight: bold; font-size: 1.1rem; color: #fff;"';
             }
 
-            // MODIFICADO: Orden de las celdas (Inyección de Total Acumulado antes de los días) y estilo word-break normal para evitar quiebres de palabras a la mitad
             filaR.innerHTML = `
                 <td style="font-weight: bold; color: var(--oro);">${etiquetaPosicion}</td>
-                <td${claseEfectoNombre} style="min-width: 160px; white-space: normal; word-break: normal;">${comp.nombre}</td>
+                <td${claseEfectoNombre} style="min-width: 160px; white-space: nowrap !important;">${comp.nombre}</td>
                 <td${claseEfectoPuntaje}>${comp.total} pts</td>
                 ${celdasDiasHtml}
             `;
@@ -1572,7 +1529,6 @@
 
                 const estrellasTotalesDeEsteDuelista = conteoTotalEstrellas[campeon] || 0;
                 
-                // Brilla en arcoíris solo en el mes donde alcanza/acumula su cantidad más alta histórica
                 if (acumuladorEstrellas[campeon] === estrellasTotalesDeEsteDuelista && estrellasTotalesDeEsteDuelista === maxEstrellas && maxEstrellas > 0) {
                     claseMitica = ' class="rainbow-glow"';
                 } else {
@@ -1585,7 +1541,7 @@
             const filaM = document.createElement('tr');
             filaM.innerHTML = `
                 <td style="color: var(--oro); font-weight: 600;">${mes}</td>
-                <td${claseMitica}>${campeon}</td>
+                <td${claseMitica} style="white-space: nowrap !important;">${campeon}</td>
                 <td${claseMitica} style="text-align: left;">${columnaEstrellas}</td>
                 <td class="columna-acciones-anual">${botonEliminarHtml}</td>
             `;

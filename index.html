@@ -416,7 +416,6 @@
             border-collapse: collapse;
             text-align: left;
             font-size: 0.95rem;
-            min-width: 500px; /* Asegura legibilidad y evita compresión exagerada en móvil */
         }
 
         th {
@@ -428,14 +427,15 @@
             font-size: 0.85rem;
             letter-spacing: 0.5px;
             border-bottom: 2px solid #2a2e3d;
-            white-space: nowrap;
+            white-space: normal; /* Permite ajuste vertical en cabeceras si es necesario */
         }
 
         td {
             padding: 12px 14px;
             border-bottom: 1px solid #2a2e3d;
             vertical-align: middle;
-            white-space: nowrap; /* Evita saltos de línea antiestéticos en celdas de datos */
+            white-space: normal; /* Modificado: Permite que el contenido salte de línea verticalmente en celulares */
+            word-break: break-word; /* Rompe palabras largas para evitar desbordamientos */
         }
 
         tr.estado-normal { background-color: transparent; }
@@ -447,6 +447,26 @@
         td.celda-campeon { color: var(--texto-campeon); font-weight: bold; background-color: rgba(27,77,62,0.15); }
         td.celda-penalizado { color: var(--texto-penalizado); background-color: rgba(102,29,29,0.15); }
         td.celda-ambos { color: var(--texto-ambos); font-weight: bold; background-color: rgba(89,74,19,0.15); }
+
+        /* Efecto Brillo Arcoíris Palpitante Exclusivo para Campeones */
+        .rainbow-glow {
+            font-weight: bold;
+            text-transform: uppercase;
+            background: linear-gradient(to right, #ff0055, #ffd700, #00ffcc, #0099ff, #ff00ff, #ff0055);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: brilloTextoGradiente 3s linear infinite, pulsoArcoiris 1.5s infinite alternate ease-in-out;
+        }
+
+        @keyframes pulsoArcoiris {
+            0% {
+                filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.2));
+            }
+            100% {
+                filter: drop-shadow(0 0 8px rgba(0, 210, 255, 0.8));
+            }
+        }
 
         /* Efecto Brillo Dorado Puntero (Palpitante) */
         .gold-glow {
@@ -523,6 +543,7 @@
         .acciones-celda {
             display: flex;
             gap: 8px;
+            flex-wrap: wrap; /* Permite que los botones se apilen si no caben en móviles */
         }
 
         .lista-sugerencias {
@@ -596,6 +617,12 @@
 
             .banner-king-titulo {
                 font-size: 1.4rem;
+            }
+
+            /* Reducción sutil de espaciados en tablas para móviles */
+            td, th {
+                padding: 10px 8px;
+                font-size: 0.85rem;
             }
         }
 
@@ -1069,7 +1096,7 @@
     btnEliminarTodoMaestro.addEventListener('click', eliminarTodosLosDuelistasMaestro);
 
     btnGuardarRegistro.addEventListener('click', procesarFormularioDuelista);
-    btnGuardarMes.addEventListener('click', procesarCampeonMensual);
+    btnGuardarMes.addEventListener('click', procesarCamponMensual);
     txtBusquedaTabla.addEventListener('input', () => renderizarTablaJornada(diaActivoActual));
 
     function renderizarAplicacionCompleta() {
@@ -1383,11 +1410,25 @@
                 }
             });
 
+            // Lógica de inyección de efectos dinámicos solicitados para el Podio Semanal
+            let claseEfectoNombre = "";
+            let claseEfectoPuntaje = "";
+
+            if (comp.rangoCalculado === 1) {
+                claseEfectoNombre = ' class="rainbow-glow"';
+                claseEfectoPuntaje = ' class="rainbow-glow" style="font-size: 1.1rem;"';
+            } else if (comp.rangoCalculado === 2) {
+                claseEfectoNombre = ' class="gold-glow"';
+                claseEfectoPuntaje = ' class="gold-glow" style="font-size: 1.1rem;"';
+            } else {
+                claseEfectoPuntaje = ' style="font-weight: bold; font-size: 1.1rem; color: #fff;"';
+            }
+
             filaR.innerHTML = `
-                <td style="font-weight: bold; color: var(--oro); white-space: nowrap;">${etiquetaPosicion}</td>
-                <td style="font-weight: bold;">${comp.nombre}</td>
+                <td style="font-weight: bold; color: var(--oro);">${etiquetaPosicion}</td>
+                <td${claseEfectoNombre}>${comp.nombre}</td>
                 ${celdasDiasHtml}
-                <td style="font-weight: bold; font-size: 1.1rem; color: #fff;">${comp.total} pts</td>
+                <td${claseEfectoPuntaje}>${comp.total} pts</td>
             `;
             cuerpoRanking.appendChild(filaR);
         });
@@ -1459,10 +1500,12 @@
                 acumuladorEstrellas[campeon] = (acumuladorEstrellas[campeon] || 0) + 1;
                 columnaEstrellas = "⭐".repeat(acumuladorEstrellas[campeon]) + ` (${acumuladorEstrellas[campeon]} Star)`;
 
-                if (conteoTotalEstrellas[campeon] === maxEstrellas) {
-                    claseMitica = 'class="gold-glow"';
+                // Validación de máximas estrellas mensuales para efectos cruzados Arcoíris / Dorado Palpitante
+                const estrellasTotalesDeEsteDuelista = conteoTotalEstrellas[campeon] || 0;
+                if (estrellasTotalesDeEsteDuelista === maxEstrellas && maxEstrellas > 0) {
+                    claseMitica = ' class="rainbow-glow"';
                 } else {
-                    claseMitica = 'class="cyan-glow"';
+                    claseMitica = ' class="gold-glow"';
                 }
 
                 botonEliminarHtml = `<button class="btn btn-accion btn-peligro btn-del-mes" data-mes="${mes}" ${appEstado.anoFinalizado ? 'disabled' : ''}>Eliminar</button>`;
@@ -1471,8 +1514,8 @@
             const filaM = document.createElement('tr');
             filaM.innerHTML = `
                 <td style="color: var(--oro); font-weight: 600;">${mes}</td>
-                <td ${claseMitica}>${campeon}</td>
-                <td ${claseMitica}>${columnaEstrellas}</td>
+                <td${claseMitica}>${campeon}</td>
+                <td${claseMitica}>${columnaEstrellas}</td>
                 <td class="columna-acciones-anual">${botonEliminarHtml}</td>
             `;
             cuerpoMasterChampion.appendChild(filaM);

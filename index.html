@@ -1361,12 +1361,12 @@
 
         cabeceraRanking.innerHTML = "";
         const filaCabecera = document.createElement('tr');
-        filaCabecera.innerHTML = `<th>POSICIÓN</th><th>Nombre</th>`;
+        // MODIFICADO: Orden de columnas de cabecera y ancho del Nombre con white-space normal adaptativo
+        filaCabecera.innerHTML = `<th>POSICIÓN</th><th style="min-width: 160px; white-space: normal; word-break: normal;">Nombre</th><th>Total Acumulado</th>`;
         diasSeleccionados.forEach(dia => { 
             const fTag = appEstado.fechasJornadas && appEstado.fechasJornadas[dia] ? `<br><small style="color:var(--texto-mutado);">${appEstado.fechasJornadas[dia]}</small>` : "";
             filaCabecera.innerHTML += `<th>${dia}${fTag}</th>`; 
         });
-        filaCabecera.innerHTML += `<th>Total Acumulado</th>`;
         cabeceraRanking.appendChild(filaCabecera);
 
         cuerpoRanking.innerHTML = "";
@@ -1424,11 +1424,12 @@
                 claseEfectoPuntaje = ' style="font-weight: bold; font-size: 1.1rem; color: #fff;"';
             }
 
+            // MODIFICADO: Orden de las celdas (Inyección de Total Acumulado antes de los días) y estilo word-break normal para evitar quiebres de palabras a la mitad
             filaR.innerHTML = `
                 <td style="font-weight: bold; color: var(--oro);">${etiquetaPosicion}</td>
-                <td${claseEfectoNombre}>${comp.nombre}</td>
-                ${celdasDiasHtml}
+                <td${claseEfectoNombre} style="min-width: 160px; white-space: normal; word-break: normal;">${comp.nombre}</td>
                 <td${claseEfectoPuntaje}>${comp.total} pts</td>
+                ${celdasDiasHtml}
             `;
             cuerpoRanking.appendChild(filaR);
         });

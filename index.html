@@ -844,7 +844,7 @@
                     <tr>
                         <th>MES LIGA</th>
                         <th>Duelista Campeón</th>
-                        <th>Master Stars</th>
+                        <th style="text-align: center;">Master Stars</th>
                         <th class="columna-acciones-anual">Acciones</th>
                     </tr>
                 </thead>
@@ -1499,7 +1499,7 @@
 
             if (campeon !== "-") {
                 acumuladorEstrellas[campeon] = (acumuladorEstrellas[campeon] || 0) + 1;
-                columnaEstrellas = "⭐".repeat(acumuladorEstrellas[campeon]) + ` (${acumuladorEstrellas[campeon]} Star)`;
+                columnaEstrellas = "⭐".repeat(acumuladorEstrellas[campeon]);
 
                 // Validación de máximas estrellas mensuales para efectos cruzados Arcoíris / Dorado Palpitante
                 const estrellasTotalesDeEsteDuelista = conteoTotalEstrellas[campeon] || 0;
@@ -1514,9 +1514,9 @@
 
             const filaM = document.createElement('tr');
             filaM.innerHTML = `
-                <td style="color: var(--oro); font-weight: 600;">${mes}</td>
+                <td style="color: var(--oro); font-weight: 600; white-space: nowrap;">${mes}</td>
                 <td${claseMitica}>${campeon}</td>
-                <td${claseMitica}>${columnaEstrellas}</td>
+                <td${claseMitica} style="text-align: center;">${columnaEstrellas}</td>
                 <td class="columna-acciones-anual">${botonEliminarHtml}</td>
             `;
             cuerpoMasterChampion.appendChild(filaM);

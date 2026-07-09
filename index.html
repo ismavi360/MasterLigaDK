@@ -774,7 +774,7 @@
                                 <div class="lista-sugerencias" id="sugerencias-autocompletado"></div>
                             </div>
                             <div class="grupo-control">
-                                <label for="num-match-ganados">Match Ganados</label>
+                                <label for="num-match-ganados">Match WIN</label>
                                 <input type="number" id="num-match-ganados" min="0" value="0">
                             </div>
                             <div class="grupo-control">
@@ -801,7 +801,7 @@
                                 <tr>
                                     <th>Duelista</th>
                                     <th>Match Ganados</th>
-                                    <th>Puntos Obtenidos</th>
+                                    <th>Puntos Dia</th>
                                     <th>DETALLE</th>
                                     <th class="acciones-celda">Acciones</th>
                                 </tr>
@@ -1395,7 +1395,7 @@
 
         cabeceraRanking.innerHTML = "";
         const filaCabecera = document.createElement('tr');
-        filaCabecera.innerHTML = `<th>POSICIÓN</th><th style="min-width: 160px; white-space: nowrap !important;">Nombre</th><th>Total Acumulado</th>`;
+        filaCabecera.innerHTML = `<th>POSICIÓN</th><th style="min-width: 160px; white-space: nowrap !important;">Nombre</th><th>PUNTOS LIGA</th>`;
         diasSeleccionados.forEach(dia => { 
             const fTag = appEstado.fechasJornadas && appEstado.fechasJornadas[dia] ? `<br><small style="color:var(--texto-mutado);">${appEstado.fechasJornadas[dia]}</small>` : "";
             filaCabecera.innerHTML += `<th>${dia}${fTag}</th>`; 

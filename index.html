@@ -324,6 +324,50 @@
             color: #fff;
         }
 
+        .btn-accion {
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            background-color: var(--bg-entrada);
+            color: var(--texto-claro);
+            border: 1px solid #3a3f52;
+        }
+
+        .btn-accion:hover:not(:disabled) {
+            border-color: var(--oro);
+            color: var(--oro);
+        }
+
+        .btn-peligro {
+            background-color: #441515;
+            color: #ff8888;
+            border: 1px solid #661d1d;
+        }
+
+        .btn-peligro:hover:not(:disabled) {
+            background-color: #661d1d;
+        }
+
+        .btn-azul {
+            background-color: #1a365d;
+            color: #93c5fd;
+            border: 1px solid #2563eb;
+        }
+
+        .btn-azul:hover:not(:disabled) {
+            background-color: #2563eb;
+            color: #fff;
+        }
+
+        .btn-verde {
+            background-color: #14532d;
+            color: #4ade80;
+            border: 1px solid #16a34a;
+        }
+        .btn-verde:hover:not(:disabled) {
+            background-color: #16a34a;
+            color: #fff;
+        }
+
         .btn-purpura {
             background-color: #4c1d95;
             color: #ddd6fe;
@@ -410,6 +454,7 @@
            ========================================================================== */
         .tabla-contenedor {
             width: 100%;
+            max-width: 100%;
             overflow-x: auto;
             margin-top: 15px;
             border-radius: var(--borde-radio);
@@ -442,6 +487,12 @@
             vertical-align: middle;
             white-space: normal; /* Modificado: Permite que el contenido salte de línea verticalmente en celulares */
             word-break: break-word; /* Rompe palabras largas para evitar desbordamientos */
+        }
+
+        /* Corrección estricta para evitar saltos entre palabras en la columna MES LIGA */
+        #tabla-master-champion td:first-child {
+            white-space: nowrap !important;
+            word-break: normal !important;
         }
 
         tr.estado-normal { background-color: transparent; }
@@ -627,8 +678,18 @@
 
             /* Reducción sutil de espaciados en tablas para móviles */
             td, th {
-                padding: 10px 8px;
-                font-size: 0.85rem;
+                padding: 8px 6px;
+                font-size: 0.8rem;
+            }
+
+            .acciones-celda {
+                gap: 4px;
+            }
+
+            .acciones-celda .btn {
+                padding: 6px 10px;
+                font-size: 0.75rem;
+                flex: 1 1 auto;
             }
         }
 

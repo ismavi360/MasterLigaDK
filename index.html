@@ -114,8 +114,9 @@
 
         /* Variaciones de Fondo para romper monotonía */
         #sec-configuracion-anual {
-            background: linear-gradient(135deg, #161820 0%, #1c152b 100%);
-            border: 1px solid #4c327a;
+            background: linear-gradient(135deg, #111424 0%, #171226 100%);
+            border: 1px dashed #7c3aed;
+            box-shadow: 0 0 15px rgba(124, 58, 237, 0.15), 0 4px 15px rgba(0,0,0,0.6);
         }
 
         #sec-ranking-anual {
@@ -141,6 +142,11 @@
         #sec-configuracion .tarjeta-titulo, #sec-formulario-registro .tarjeta-titulo {
             border-left: 4px solid #00d2ff;
             color: #00d2ff;
+        }
+
+        #sec-configuracion-anual .tarjeta-titulo {
+            border-left: 4px solid #7c3aed;
+            color: #7c3aed;
         }
 
         .zona-botones-header {
@@ -294,7 +300,7 @@
         }
 
         .btn-peligro:hover:not(:disabled) {
-            background-color: var(--estado-penalizado);
+            background-color: #661d1d;
         }
 
         .btn-azul {
@@ -1501,7 +1507,7 @@
 
             if (campeon !== "-") {
                 acumuladorEstrellas[campeon] = (acumuladorEstrellas[campeon] || 0) + 1;
-                columnaEstrellas = "⭐".repeat(acumuladorEstrellas[campeon]) + ` (${acumuladorEstrellas[campeon]} Star)`;
+                columnaEstrellas = "⭐".repeat(acumuladorEstrellas[campeon]);
 
                 const estrellasTotalesDeEsteDuelista = conteoTotalEstrellas[campeon] || 0;
                 
@@ -1519,7 +1525,7 @@
             filaM.innerHTML = `
                 <td style="color: var(--oro); font-weight: 600;">${mes}</td>
                 <td${claseMitica}>${campeon}</td>
-                <td${claseMitica}>${columnaEstrellas}</td>
+                <td${claseMitica} style="text-align: left;">${columnaEstrellas}</td>
                 <td class="columna-acciones-anual">${botonEliminarHtml}</td>
             `;
             cuerpoMasterChampion.appendChild(filaM);

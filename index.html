@@ -68,12 +68,18 @@
             gap: 8px;
         }
 
+        /* Efecto Arcoíris Brillante para el Título Principal */
         header h1 {
-            color: var(--oro);
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             letter-spacing: 2px;
             text-transform: uppercase;
-            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+            font-weight: 900;
+            background: linear-gradient(to right, #ff0055, #ffd700, #00ffcc, #0099ff, #ff00ff, #ff0055);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: brilloTextoGradiente 3s linear infinite;
+            filter: drop-shadow(0 0 8px rgba(0, 255, 204, 0.3));
         }
 
         header p {
@@ -99,6 +105,13 @@
             width: 100%;
         }
 
+        /* Estilo Destacado Visual para Tarjetas de Ingreso de Datos */
+        #sec-configuracion, #sec-formulario-registro {
+            background: linear-gradient(135deg, #111424 0%, #171226 100%);
+            border: 1px dashed #00d2ff;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.15), 0 4px 15px rgba(0,0,0,0.6);
+        }
+
         /* Variaciones de Fondo para romper monotonía */
         #sec-configuracion-anual {
             background: linear-gradient(135deg, #161820 0%, #1c152b 100%);
@@ -122,6 +135,12 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 12px;
+        }
+
+        /* Ajuste de borde de título para secciones de ingreso de datos */
+        #sec-configuracion .tarjeta-titulo, #sec-formulario-registro .tarjeta-titulo {
+            border-left: 4px solid #00d2ff;
+            color: #00d2ff;
         }
 
         .zona-botones-header {
@@ -243,6 +262,16 @@
         .btn-oro:hover:not(:disabled) {
             background-color: var(--oro-brillo);
             box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        /* Cambiar dinámicamente botones de acción principales dentro de zonas de entrada */
+        #sec-configuracion .btn-oro, #sec-formulario-registro .btn-oro {
+            background-color: #00d2ff;
+            color: #000;
+        }
+        #sec-configuracion .btn-oro:hover:not(:disabled), #sec-formulario-registro .btn-oro:hover:not(:disabled) {
+            background-color: #e0f9ff;
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.6);
         }
 
         .btn-accion {
@@ -488,7 +517,7 @@
 
         @keyframes brilloTextoGradiente {
             0% { background-position: 0% 50%; }
-            100% { background-position: 300% 50%; }
+            100% { background-position: 200% 50%; }
         }
 
         .acciones-celda {
@@ -614,7 +643,7 @@
 <div class="contenedor">
     <header>
         <h1>Master Liga DK</h1>
-        <p id="subtitulo-header">Pizarra Exclusiva de Resultados y Posiciones Semanales</p>
+        <p id="subtitulo-header">Liga de Yu-Gi-Oh! Formato Avanzado - Duelist Kingdom</p>
         <button class="btn btn-accion btn-auth-header" id="btn-modo-auth">🔑 Acceso Admin</button>
     </header>
 
@@ -633,7 +662,7 @@
                 <button class="btn btn-peligro" id="btn-reiniciar-liga" style="font-size: 0.8rem; padding: 6px 12px;">Nueva Semana</button>
             </div>
         </div>
-        <p style="margin-bottom: 15px; color: var(--texto-mutado);">Selecciona los días activos para las jornadas de la presente semana:</p>
+        <p style="margin-bottom: 15px; color: var(--texto-mutado);">Selecciona los días activos para la liga de la presente semana:</p>
         <div class="grid-config">
             <label class="opcion-check"><input type="checkbox" value="Lunes" class="chk-dia"> Lunes</label>
             <label class="opcion-check"><input type="checkbox" value="Martes" class="chk-dia"> Martes</label>
@@ -643,7 +672,7 @@
             <label class="opcion-check"><input type="checkbox" value="Sábado" class="chk-dia"> Sábado</label>
             <label class="opcion-check"><input type="checkbox" value="Domingo" class="chk-dia"> Domingo</label>
         </div>
-        <button class="btn btn-oro" id="btn-inicializar" style="width: 100%;">Establecer Estructura Semanal</button>
+        <button class="btn btn-oro" id="btn-inicializar" style="width: 100%;">CREAR LIGA SEMANAL</button>
     </section>
 
     <section id="sec-maestro-duelistas" class="tarjeta" style="display: none;">
@@ -658,8 +687,8 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Nombre Registrado</th>
-                        <th>Acciones de Edición de Base de Datos</th>
+                        <th>Duelista Registrado</th>
+                        <th>Edición de Base de Datos</th>
                     </tr>
                 </thead>
                 <tbody id="cuerpo-tabla-maestro"></tbody>
@@ -678,7 +707,7 @@
                         <input type="hidden" id="edit-index">
                         <div class="grid-formulario">
                             <div class="grupo-control">
-                                <label for="txt-nombre-duelista">Nombre Completo (Nombre Apellido)</label>
+                                <label for="txt-nombre-duelista">DUELISTA (Nombre Apellido)</label>
                                 <input type="text" id="txt-nombre-guess" style="display:none;" name="bot-field">
                                 <input type="text" id="txt-nombre-duelista" placeholder="Ej: Seto Kaiba" autocomplete="off">
                                 <div class="lista-sugerencias" id="sugerencias-autocompletado"></div>
@@ -694,7 +723,7 @@
                                 <label class="opcion-check"><input type="checkbox" id="chk-penalizacion"> ¿Penalizado?</label>
                             </div>
                             <div>
-                                <button type="button" class="btn btn-oro" id="btn-guardar-registro" style="width: 100%;">Guardar</button>
+                                <button type="button" class="btn btn-oro" id="btn-guardar-registro" style="width: 100%;">REGISTRAR</button>
                             </div>
                         </div>
                     </form>
@@ -703,7 +732,7 @@
                 <section class="tarjeta" id="sec-tabla-jornada-contenedor">
                     <div class="tarjeta-titulo"><span id="titulo-tabla-jornada">Resultados de la Jornada</span></div>
                     <div class="grupo-control" style="margin-bottom: 15px;">
-                        <input type="text" id="txt-busqueda-tabla" placeholder="Filtrar competidores en esta jornada...">
+                        <input type="text" id="txt-busqueda-tabla" placeholder="Filtrar duelistas...">
                     </div>
                     <div class="tabla-contenedor">
                         <table id="tabla-jornada-diaria">
@@ -712,7 +741,7 @@
                                     <th>Duelista</th>
                                     <th>Match Ganados</th>
                                     <th>Puntos Obtenidos</th>
-                                    <th>Condición/Estado</th>
+                                    <th>DETALLE</th>
                                     <th class="acciones-celda">Acciones</th>
                                 </tr>
                             </thead>
@@ -725,7 +754,7 @@
 
         <section class="tarjeta" id="sec-ranking-final">
             <div class="tarjeta-titulo">
-                <span>Clasificación y Ranking General Semanal</span>
+                <span>Clasificación y Ranking Semanal</span>
                 <div class="zona-botones-header">
                     <button class="btn btn-verde" id="btn-finalizar-semana" style="font-size: 0.8rem; padding: 6px 12px;">Finalizar Semana</button>
                 </div>
@@ -740,28 +769,28 @@
 
         <!-- Panel de Asignación de Campeón Mensual (Admin) -->
         <section class="tarjeta" id="sec-configuracion-anual">
-            <div class="tarjeta-titulo"><span>Registrar Campeón del Mes (Control Anual)</span></div>
+            <div class="tarjeta-titulo"><span>REGISTRO DE CAMPEONES MENSUALES</span></div>
             <form id="form-registro-mensual" onsubmit="event.preventDefault();">
                 <div class="grid-formulario">
                     <div class="grupo-control">
                         <label for="sel-mes-anual">Seleccionar Mes</label>
                         <select id="sel-mes-anual">
-                            <option value="LIGA ENERO">LIGA ENERO</option>
-                            <option value="LIGA FEBRERO">LIGA FEBRERO</option>
-                            <option value="LIGA MARZO">LIGA MARZO</option>
-                            <option value="LIGA ABRIL">LIGA ABRIL</option>
-                            <option value="LIGA MAYO">LIGA MAYO</option>
-                            <option value="LIGA JUNIO">LIGA JUNIO</option>
-                            <option value="LIGA JULIO">LIGA JULIO</option>
-                            <option value="LIGA AGOSTO">LIGA AGOSTO</option>
-                            <option value="LIGA SEPTIEMBRE">LIGA SEPTIEMBRE</option>
-                            <option value="LIGA OCTUBRE">LIGA OCTUBRE</option>
-                            <option value="LIGA NOVIEMBRE">LIGA NOVIEMBRE</option>
-                            <option value="LIGA DICIEMBRE">LIGA DICIEMBRE</option>
+                            <option value="ENERO">ENERO</option>
+                            <option value="FEBRERO">FEBRERO</option>
+                            <option value="MARZO">MARZO</option>
+                            <option value="ABRIL">ABRIL</option>
+                            <option value="MAYO">MAYO</option>
+                            <option value="JUNIO">JUNIO</option>
+                            <option value="JULIO">JULIO</option>
+                            <option value="AGOSTO">AGOSTO</option>
+                            <option value="SEPTIEMBRE">SEPTIEMBRE</option>
+                            <option value="OCTUBRE">OCTUBRE</option>
+                            <option value="NOVIEMBRE">NOVIEMBRE</option>
+                            <option value="DICIEMBRE">DICIEMBRE</option>
                         </select>
                     </div>
                     <div class="grupo-control">
-                        <label for="txt-nombre-campeon-mes">Nombre del Campeón</label>
+                        <label for="txt-nombre-campeon-mes">Duelista Campeón Mes</label>
                         <input type="text" id="txt-nombre-campeon-mes" placeholder="Buscar en base de datos..." autocomplete="off">
                         <div class="lista-sugerencias" id="sugerencias-mensual"></div>
                     </div>
@@ -776,7 +805,7 @@
     <!-- Tabla de Clasificación de Campeones Mensuales (Master Stars) - Fuera de zona-operativa -->
     <section class="tarjeta" id="sec-ranking-anual">
         <div class="tarjeta-titulo">
-            <span>Historial Anual: Master Duelist Champion</span>
+            <span>Master Duelist Champion 2026</span>
             <div class="zona-botones-header">
                 <button class="btn btn-peligro" id="btn-eliminar-tabla-anual" style="font-size: 0.8rem; padding: 6px 12px;">Eliminar Tabla Anual</button>
                 <button class="btn btn-purpura" id="btn-finalizar-anual" style="font-size: 0.8rem; padding: 6px 12px;">Finalizar Master Liga Anual</button>
@@ -786,9 +815,9 @@
             <table id="tabla-master-champion">
                 <thead>
                     <tr>
-                        <th>Mes Evaluado</th>
-                        <th>Nombre del Campeón</th>
-                        <th>Master Star Acumuladas</th>
+                        <th>MES LIGA</th>
+                        <th>Duelista Campeón</th>
+                        <th>Master Stars</th>
                         <th class="columna-acciones-anual">Acciones</th>
                     </tr>
                 </thead>
@@ -888,12 +917,12 @@
     function aplicarModoVisual() {
         if (esModoEspectador) {
             document.body.classList.add('modo-espectador');
-            document.getElementById('subtitulo-header').textContent = "Pizarra Exclusiva de Resultados y Posiciones Semanales";
+            document.getElementById('subtitulo-header').textContent = "Liga de Yu-Gi-Oh! Formato Avanzado - Duelist Kingdom";
             btnModoAuth.textContent = "🔑 Acceso Admin";
             btnModoAuth.className = "btn btn-accion btn-auth-header";
         } else {
             document.body.classList.remove('modo-espectador');
-            document.getElementById('subtitulo-header').textContent = "Sistema de Control, Puntuación Automatizada y Clasificación Semanal";
+            document.getElementById('subtitulo-header').textContent = "Liga de Yu-Gi-Oh! Formato Avanzado - Duelist Kingdom";
             btnModoAuth.textContent = "🔒 Cerrar Edición";
             btnModoAuth.className = "btn btn-peligro btn-auth-header";
         }
@@ -1112,7 +1141,7 @@
                     <option value="JUN">JUN</option>
                     <option value="JUL">JUL</option>
                     <option value="AGO">AGO</option>
-                    <option value="SET">SET</option>
+                    <option value="SEP">SEP</option>
                     <option value="OCT">OCT</option>
                     <option value="NOV">NOV</option>
                     <option value="DIC">DIC</option>
@@ -1214,8 +1243,8 @@
         cuerpoTablaJornada.innerHTML = "";
         
         const fechaDisplay = appEstado.fechasJornadas && appEstado.fechasJornadas[dia] ? ` (${appEstado.fechasJornadas[dia]})` : "";
-        document.getElementById('titulo-tabla-jornada').textContent = `Resultados de la Jornada: ${dia}${fechaDisplay}`;
-        document.getElementById('titulo-formulario-jornada').textContent = `Registrar Entrada Diaria - ${dia}${fechaDisplay}`;
+        document.getElementById('titulo-tabla-jornada').textContent = `RESULTADOS LIGA DIA - ${dia}${fechaDisplay}`;
+        document.getElementById('titulo-formulario-jornada').textContent = `REGISTRO DIARIO - ${dia}${fechaDisplay}`;
         
         let registros = appEstado.jornadas[dia] || [];
         const filtro = txtBusquedaTabla.value.toLowerCase().trim();
@@ -1254,7 +1283,7 @@
         });
 
         if (cuerpoTablaJornada.innerHTML === "") {
-            cuerpoTablaJornada.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--texto-mutado);">No hay registros para esta jornada.</td></tr>`;
+            cuerpoTablaJornada.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--texto-mutado);">No hay registros para este día.</td></tr>`;
         }
     }
 
@@ -1270,8 +1299,8 @@
             fila.innerHTML = `
                 <td><strong>${duelista}</strong></td>
                 <td class="acciones-celda">
-                    <button class="btn btn-accion" id="btn-edit-maestro-${index}" ${appEstado.semanaFinalizada ? 'disabled' : ''}>Modificar Nombre</button>
-                    <button class="btn btn-accion btn-peligro" id="btn-del-maestro-${index}" ${appEstado.semanaFinalizada ? 'disabled' : ''}>Eliminar de BD</button>
+                    <button class="btn btn-accion" id="btn-edit-maestro-${index}" ${appEstado.semanaFinalizada ? 'disabled' : ''}>MODIFICAR</button>
+                    <button class="btn btn-accion btn-peligro" id="btn-del-maestro-${index}" ${appEstado.semanaFinalizada ? 'disabled' : ''}>ELIMINAR</button>
                 </td>
             `;
             cuerpoTablaMaestro.appendChild(fila);
@@ -1305,7 +1334,7 @@
 
         cabeceraRanking.innerHTML = "";
         const filaCabecera = document.createElement('tr');
-        filaCabecera.innerHTML = `<th>Lugar / Distinción</th><th>Nombre</th>`;
+        filaCabecera.innerHTML = `<th>POSICIÓN</th><th>Nombre</th>`;
         diasSeleccionados.forEach(dia => { 
             const fTag = appEstado.fechasJornadas && appEstado.fechasJornadas[dia] ? `<br><small style="color:var(--texto-mutado);">${appEstado.fechasJornadas[dia]}</small>` : "";
             filaCabecera.innerHTML += `<th>${dia}${fTag}</th>`; 
@@ -1365,16 +1394,16 @@
 
         if (competidoresOrdenados.length === 0) {
             const totalColumnas = diasSeleccionados.length + 3;
-            cuerpoRanking.innerHTML = `<tr><td colspan="${totalColumnas}" style="text-align: center; color: var(--texto-mutado);">Esperando registros diarios para computar posiciones de liga.</td></tr>`;
+            cuerpoRanking.innerHTML = `<tr><td colspan="${totalColumnas}" style="text-align: center; color: var(--texto-mutado);">Esperando registros diarios de liga.</td></tr>`;
         }
     }
 
     const mesesDelAno = [
-        "LIGA ENERO", "LIGA FEBRERO", "LIGA MARZO", "LIGA ABRIL", "LIGA MAYO", "LIGA JUNIO",
-        "LIGA JULIO", "LIGA AGOSTO", "LIGA SEPTIEMBRE", "LIGA OCTUBRE", "LIGA NOVIEMBRE", "LIGA DICIEMARE"
+        "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO",
+        "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"
     ];
 
-    function procesarCampeonMensual() {
+    function procesarCamponMensual() {
         if (appEstado.anoFinalizado) return;
         const mesSeleccionado = selMesAnual.value;
         const nombreCampeon = txtNombreCampeonMes.value.trim();

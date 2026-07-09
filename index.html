@@ -697,7 +697,7 @@
 <div class="contenedor">
     <header>
         <h1>Master Liga DK</h1>
-        <p id="subtitulo-header">Liga de Yu-Gi-Oh! Formato Avanzado - Duelist Kingdom</p>
+        <p id="subtitulo-header">Yu-Gi-Oh! Formato Avanzado - Duelist Kingdom</p>
         <button class="btn btn-accion btn-auth-header" id="btn-modo-auth">🔑 Acceso Admin</button>
     </header>
 
@@ -971,12 +971,12 @@
     function aplicarModoVisual() {
         if (esModoEspectador) {
             document.body.classList.add('modo-espectador');
-            document.getElementById('subtitulo-header').textContent = "Liga de Yu-Gi-Oh! Formato Avanzado - Duelist Kingdom";
+            document.getElementById('subtitulo-header').textContent = "Yu-Gi-Oh! Formato Avanzado - Duelist Kingdom";
             btnModoAuth.textContent = "🔑 Acceso Admin";
             btnModoAuth.className = "btn btn-accion btn-auth-header";
         } else {
             document.body.classList.remove('modo-espectador');
-            document.getElementById('subtitulo-header').textContent = "Liga de Yu-Gi-Oh! Formato Avanzado - Duelist Kingdom";
+            document.getElementById('subtitulo-header').textContent = "Yu-Gi-Oh! Formato Avanzado - Duelist Kingdom";
             btnModoAuth.textContent = "🔒 Cerrar Edición";
             btnModoAuth.className = "btn btn-peligro btn-auth-header";
         }

@@ -1395,7 +1395,7 @@
 
         cabeceraRanking.innerHTML = "";
         const filaCabecera = document.createElement('tr');
-        filaCabecera.innerHTML = `<th>POSICIÓN</th><th style="min-width: 160px; white-space: nowrap !important;">Nombre</th><th>PUNTOS LIGA</th>`;
+        filaCabecera.innerHTML = `<th>POSICIÓN</th><th style="min-width: 160px; white-space: nowrap !important;">Nombre</th><th>LIGA PTS</th>`;
         diasSeleccionados.forEach(dia => { 
             const fTag = appEstado.fechasJornadas && appEstado.fechasJornadas[dia] ? `<br><small style="color:var(--texto-mutado);">${appEstado.fechasJornadas[dia]}</small>` : "";
             filaCabecera.innerHTML += `<th>${dia}${fTag}</th>`; 

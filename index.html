@@ -753,7 +753,7 @@
     <!-- Banner Semanal de Ganadores -->
     <div id="banner-ganadores-semanal" class="banner-king">
         <button id="btn-eliminar-banner-semanal" class="btn btn-peligro" style="position: absolute; top: 10px; right: 10px; padding: 4px 8px; font-size: 0.75rem;">✕ Eliminar Banner</button>
-        <p style="color: var(--oro); font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 5px;">🏆 Campeones Semanales 🏆</p>
+        <p style="color: var(--oro); font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 5px;">🏆 CAMPEÓN MASTER LIGA DK 🏆</p>
         <div id="texto-ganadores-semanal" class="banner-king-titulo">GANADOR SEMANAL</div>
         
         <!-- Zona de Foto del Ganador -->
@@ -1643,13 +1643,44 @@
             nombre: key, ...resumenSemanal[key]
         })).sort((a, b) => b.total - a.total);
 
+        // Detectar si hubo desempate manual con ganador único
+        let ganadorUnicoManual = null;
+        if (appEstado.semanaFinalizada && appEstado.ganadorSemanalTexto && !appEstado.ganadorSemanalTexto.includes("&")) {
+            ganadorUnicoManual = appEstado.ganadorSemanalTexto.trim();
+        }
+
+        let maxPuntosGlobal = competidoresOrdenados.length > 0 ? competidoresOrdenados[0].total : -1;
+        
+        // Reordenar si hay ganador manual elegido en un empate
+        if (ganadorUnicoManual) {
+            competidoresOrdenados.sort((a, b) => {
+                if (a.nombre === ganadorUnicoManual) return -1;
+                if (b.nombre === ganadorUnicoManual) return 1;
+                return b.total - a.total;
+            });
+        }
+
         let posicionReal = 1;
         let ultimoPuntaje = -1;
         let competidoresConPosicion = competidoresOrdenados.map((comp, index) => {
+            if (ganadorUnicoManual && comp.total === maxPuntosGlobal) {
+                ultimoPuntaje = comp.total;
+                if (comp.nombre === ganadorUnicoManual) {
+                    return { ...comp, rangoCalculado: 1, esGanadorManual: true };
+                } else {
+                    return { ...comp, rangoCalculado: 2, esEmpatadoManual: true };
+                }
+            }
+
             if (index === 0) {
                 ultimoPuntaje = comp.total;
             } else if (comp.total !== ultimoPuntaje) {
-                posicionReal = posicionReal + 1;
+                // Si venimos de un grupo empatado en el 1er puesto resuelto por desempate
+                if (ganadorUnicoManual && ultimoPuntaje === maxPuntosGlobal) {
+                    posicionReal = 3;
+                } else {
+                    posicionReal = posicionReal + 1;
+                }
                 ultimoPuntaje = comp.total;
             }
             return { ...comp, rangoCalculado: posicionReal };
